@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.MonitoringPointMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.MonitoringPoint">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="factoryAreaId" column="factory_area_id" jdbcType="INTEGER"/>
+            <result property="areaName" column="area_name" jdbcType="VARCHAR"/>
+            <result property="serialNumber" column="serial_number" jdbcType="VARCHAR"/>
+            <result property="auditor" column="auditor" jdbcType="VARCHAR"/>
+            <result property="abscissa" column="abscissa" jdbcType="INTEGER"/>
+            <result property="ordinate" column="ordinate" jdbcType="INTEGER"/>
+            <result property="itemCount" column="item_count" jdbcType="INTEGER"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,factory_area_id,area_name,
+        serial_number,auditor,abscissa,
+        ordinate,item_count,is_deleted,
+        create_time,modify_time
+    </sql>
+</mapper>

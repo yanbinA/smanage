@@ -1,0 +1,120 @@
+spring:
+  application:
+    name: smanage
+  profiles:
+    active: home
+    group:
+      dev: dev-db,dev-log
+      home: home-db,home-log
+      prd: prd-db,prd-log
+  devtools:
+    restart:
+      enabled: true
+  security:
+    user:
+      name: user
+      password: 321
+  messages:
+    basename: i18n.ManageMessage
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 10MB
+#mybatis
+mybatis-plus:
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  #实体扫描，多个package用逗号或者分号分隔
+  typeAliasesPackage: com.temple.manage.entity
+  typeEnumsPackage: com.temple.manage.entity.enums
+  global-config:
+    #刷新mapper
+    refresh: true
+springdoc:
+  packagesToScan: com.temple.manage.controller
+jwt:
+  header: Authorization
+  # This token must be encoded using Base64 with mininum 88 Bits (you can type `echo 'secret-key'|base64` on your command line)
+  base64-secret: ZmQ0ZGI5NjQ0MDQwY2I4MjMxY2Y3ZmI3MjdhN2ZmMjNhODViOTg1ZGE0NTBjMGM4NDA5NzYxMjdjOWMwYWRmZTBlZjlhNGY3ZTg4Y2U3YTE1ODVkZDU5Y2Y3OGYwZWE1NzUzNWQ2YjFjZDc0NGMxZWU2MmQ3MjY1NzJmNTE0MzI=
+  # token is valid 24 hours
+  token-validity-in-seconds: 86400
+  # valid 30 hours
+  token-validity-in-seconds-for-remember-me: 108000
+server:
+  port: 8080
+wx:
+  corpSecret: X-ZC0RNCjl02Fpll5Ma0DkhsCsrgt_FFLcFuB0G3dss
+  corpId: wwbc036019ad9d1e5d
+  agentId: 1000020
+  appId: wx002db6ba4793bb79
+---
+spring:
+  config:
+    activate:
+      on-profile: home-db
+  datasource:
+    username: smanage
+    password: YCRNhRAXTwPtYK6M
+    url: jdbc:mysql://101.33.253.244:3306/smanage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+upload:
+  location: D:/image/
+  remote: http://localhost/image/
+---
+spring:
+  config:
+    activate:
+      on-profile: dev-db
+  datasource:
+    username: im_agent
+    password: sdj12345678
+    url: jdbc:mysql://10.254.0.10:5505/im_agent?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+upload:
+  location: D:/image/
+  remote: http://localhost/image/
+---
+spring:
+  config:
+    activate:
+      on-profile: prd-db
+  datasource:
+    username: smanage
+    password: YCRNhRAXTwPtYK6M
+    url: jdbc:mysql://127.0.0.1:3306/smanage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+upload:
+  location: /www/wwwroot/image/
+  remote: http://101.33.253.244/image/
+---
+spring:
+  config:
+    activate:
+      on-profile: home-log
+logging:
+  file:
+    name: D:/var/logs/smanage
+  level:
+    com.temple.manage.security: DEBUG
+    org.springframework.security: DEBUG
+---
+spring:
+  config:
+    activate:
+      on-profile: home-log
+logging:
+  file:
+    name: /home/willso/logs/smanage
+  level:
+    com.temple.manage.security: DEBUG
+    org.springframework.security: DEBUG
+---
+spring:
+  config:
+    activate:
+      on-profile: prd-log
+logging:
+  file:
+    name: /www/wwwroot/logs/smanage
+  level:
+    com.temple.manage.security: DEBUG
+    org.springframework.security: DEBUG

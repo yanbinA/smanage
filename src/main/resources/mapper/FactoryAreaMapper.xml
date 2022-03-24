@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.FactoryAreaMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.FactoryArea">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="name" column="name" jdbcType="VARCHAR"/>
+            <result property="serialNumber" column="serial_number" jdbcType="VARCHAR"/>
+            <result property="planUrl" column="plan_url" jdbcType="VARCHAR"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,name,serial_number,
+        plan_url,is_deleted,create_time,
+        modify_time
+    </sql>
+</mapper>

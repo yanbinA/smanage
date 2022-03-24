@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.ImproveMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.Improve">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="VARCHAR"/>
+            <result property="userName" column="user_name" jdbcType="VARCHAR"/>
+            <result property="department" column="department" jdbcType="BIGINT"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="title" column="title" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="actionRemark" column="action_remark" jdbcType="VARCHAR"/>
+            <result property="proceedRemark" column="proceed_remark" jdbcType="VARCHAR"/>
+            <result property="finish" column="finish" jdbcType="BOOLEAN"/>
+            <result property="improveTypeId" column="improve_type_id" jdbcType="INTEGER"/>
+            <result property="departmentType" column="department_type" jdbcType="INTEGER"/>
+            <result property="improveName" column="improve_name" jdbcType="VARCHAR"/>
+            <result property="process" column="process" typeHandler="com.temple.manage.common.handler.ImproveProcessTypeHandler"/>
+            <result property="nextUserId" column="next_user_id" jdbcType="VARCHAR"/>
+            <result property="nextUserName" column="next_user_name" jdbcType="VARCHAR"/>
+            <result property="rejected" column="rejected" jdbcType="VARCHAR"/>
+            <result property="version" column="version" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,user_id,user_name,
+        department,status,title,
+        remark,action_remark,proceed_remark,
+        finish,improve_type_id,department_type,
+        improve_name,process,next_user_id,
+        next_user_name,rejected,version,
+        create_time,modify_time
+    </sql>
+</mapper>

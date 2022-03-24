@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.MonitoringItemMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.MonitoringItem">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="monitoringPointId" column="monitoring_point_id" jdbcType="INTEGER"/>
+            <result property="itemNumber" column="item_number" jdbcType="VARCHAR"/>
+            <result property="remark" column="remark" jdbcType="VARCHAR"/>
+            <result property="itemUrl" column="item_url" jdbcType="VARCHAR"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,monitoring_point_id,item_number,
+        remark,item_url,is_deleted,
+        create_time,modify_time
+    </sql>
+</mapper>

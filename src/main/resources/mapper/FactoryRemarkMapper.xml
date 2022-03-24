@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.FactoryRemarkMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.FactoryRemark">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="localTitle" column="local_title" jdbcType="VARCHAR"/>
+            <result property="localRemark" column="local_remark" jdbcType="VARCHAR"/>
+            <result property="cleanTitle" column="local_title" jdbcType="VARCHAR"/>
+            <result property="cleanRemark" column="clean_remark" jdbcType="VARCHAR"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,local_remark,clean_remark,local_title,local_title,
+        create_time,modify_time
+    </sql>
+</mapper>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.AuditResultMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.AuditResult">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="auditRecordId" column="audit_record_id" jdbcType="INTEGER"/>
+            <result property="factoryAreaId" column="factory_area_id" jdbcType="INTEGER"/>
+            <result property="factoryAreaName" column="factory_area_name" jdbcType="VARCHAR"/>
+            <result property="completeDate" column="complete_date" jdbcType="DATE"/>
+            <result property="auditorName" column="auditor_name" jdbcType="VARCHAR"/>
+            <result property="auditor" column="auditor" jdbcType="VARCHAR"/>
+            <result property="itemCountTotal" column="item_count_total" jdbcType="INTEGER"/>
+            <result property="positionScore" column="position_score" jdbcType="DECIMAL"/>
+            <result property="cleanScore" column="clean_score" jdbcType="DECIMAL"/>
+            <result property="keepScore" column="keep_score" jdbcType="DECIMAL"/>
+            <result property="unqualifiedItemList" column="unqualified_item_list" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+            <result property="unqualifiedUrlList" column="unqualified_url_list" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,audit_record_id,factory_area_id,
+        factory_area_name,complete_date,auditor_name,
+        auditor,item_count_total,position_score,
+        clean_score,keep_score,unqualified_item_list,
+        unqualified_url_list,create_time,modify_time
+    </sql>
+</mapper>

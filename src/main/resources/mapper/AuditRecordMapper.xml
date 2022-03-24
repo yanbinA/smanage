@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.AuditRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.AuditRecord">
+            <id property="id" column="id" jdbcType="INTEGER"/>
+            <result property="auditorName" column="auditor_name" jdbcType="VARCHAR"/>
+            <result property="status" column="status" jdbcType="INTEGER"/>
+            <result property="factoryAreaId" column="factory_area_id" jdbcType="INTEGER"/>
+            <result property="factoryAreaName" column="factory_area_name" jdbcType="VARCHAR"/>
+            <result property="factoryAreaSerialNumber" column="factory_area_serial_number" jdbcType="VARCHAR"/>
+            <result property="completeDate" column="complete_date" jdbcType="DATE"/>
+            <result property="isDeleted" column="is_deleted" jdbcType="BOOLEAN"/>
+            <result property="uniqueSign" column="unique_sign" jdbcType="BIGINT"/>
+            <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+            <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,auditor_name,status,
+        factory_area_id,factory_area_name,factory_area_serial_number,
+        complete_date,is_deleted,unique_sign,create_time,
+        modify_time
+    </sql>
+    <select id="selectPageVo" resultType="com.temple.manage.domain.vo.AuditRecordVo">
+        select
+           id as auditRecordId,
+           auditor_name as auditorName,
+           factory_area_id as factoryAreaId,
+           factory_area_name as factoryAreaName,
+           modify_time as modifyTime
+        from s_audit_record
+        where status=${@com.temple.manage.entity.enums.AuditRecordStatusEnum@SUBMIT.getCode()}
+    </select>
+</mapper>

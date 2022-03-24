@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.temple.manage.mapper.PointAuditRecordMapper">
+
+    <resultMap id="BaseResultMap" type="com.temple.manage.entity.PointAuditRecord">
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="auditRecordId" column="audit_record_id" jdbcType="INTEGER"/>
+        <result property="status" column="status" jdbcType="INTEGER"/>
+        <result property="pointId" column="point_id" jdbcType="INTEGER"/>
+        <result property="areaName" column="area_name" jdbcType="VARCHAR"/>
+        <result property="serialNumber" column="serial_number" jdbcType="VARCHAR"/>
+        <result property="auditor" column="auditor" jdbcType="VARCHAR"/>
+        <result property="itemCount" column="item_count" jdbcType="INTEGER"/>
+        <result property="itemCountTotal" column="item_count_total" jdbcType="INTEGER"/>
+        <result property="positionScore" column="position_score" jdbcType="INTEGER"/>
+        <result property="positionRemark" column="position_remark" jdbcType="VARCHAR"/>
+        <result property="positionImage" column="position_image" jdbcType="VARCHAR"/>
+        <result property="cleanScore" column="clean_score" jdbcType="INTEGER"/>
+        <result property="cleanRemark" column="clean_remark" jdbcType="VARCHAR"/>
+        <result property="cleanImage" column="clean_image" jdbcType="VARCHAR"/>
+        <result property="itemList" column="item_list" jdbcType="VARCHAR" typeHandler="com.temple.manage.common.handler.ItemResultTypeHandler"/>
+        <result property="keepScore" column="keep_score" jdbcType="INTEGER"/>
+        <result property="beforeId" column="before_id" jdbcType="INTEGER"/>
+        <result property="imageScore" column="image_score" jdbcType="DECIMAL"/>
+        <result property="totalScore" column="total_score" jdbcType="DECIMAL"/>
+        <result property="unqualifiedItemList" column="unqualified_item_list" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="unqualifiedUrlList" column="unqualified_url_list" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler"/>
+        <result property="isDeleted" column="is_deleted" jdbcType="BIGINT"/>
+        <result property="version" column="version" jdbcType="BIGINT"/>
+        <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
+        <result property="modifyTime" column="modify_time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id,audit_record_id,status,
+        point_id,area_name,serial_number,auditor,
+        item_count,item_count_total,position_score,
+        position_remark,position_image,clean_score,
+        clean_remark,clean_image,item_list,
+        keep_score,before_id,image_score,total_score,
+        unqualified_item_list,unqualified_url_list,
+        version,is_deleted,create_time,modify_time
+    </sql>
+</mapper>

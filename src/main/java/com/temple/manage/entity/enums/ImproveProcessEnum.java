@@ -19,7 +19,7 @@ public enum ImproveProcessEnum implements IEnum{
     SUBMITTED(1, "提交人"),
     APPROVED(2, "审批通过"),
     REJECTED(3, "驳回"),
-    SKIP(4, "驳回"),
+    SKIP(4, "跳过"),
     ;
     @EnumValue
     @JsonValue

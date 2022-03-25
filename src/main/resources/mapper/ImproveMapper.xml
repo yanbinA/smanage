@@ -36,4 +36,15 @@
         next_user_name,rejected,version,
         create_time,modify_time
     </sql>
+    <select id="approved" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from s_improve
+        where JSON_CONTAINS(process, JSON_OBJECT('userId', #{userId},'operation', 'APPROVED'))
+        or JSON_CONTAINS(process, JSON_OBJECT('userId', #{userId},'operation', 'REJECTED'))
+    </select>
+    <select id="follow" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from s_improve
+        where JSON_CONTAINS(process, JSON_OBJECT('followUserIds', #{userId}))
+    </select>
 </mapper>

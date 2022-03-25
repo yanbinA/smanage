@@ -7,6 +7,7 @@ import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -89,9 +90,13 @@ public class ImproveController {
     @GetMapping("/authenticate")
     @Operation(summary = "小程序用户登录")
     public R<JWTSession> authorizeWx(@NotBlank @RequestParam() String code) throws WxErrorException {
-        WxCpMaJsCode2SessionResult sessionResult = wxCpService.jsCode2Session(code);
-        String sessionKey = sessionResult.getSessionKey();
-        String userId = sessionResult.getUserId();
+//        WxCpMaJsCode2SessionResult sessionResult = wxCpService.jsCode2Session(code);
+//        String sessionKey = sessionResult.getSessionKey();
+//        String userId = sessionResult.getUserId();
+        WxCpMaJsCode2SessionResult sessionResult = new WxCpMaJsCode2SessionResult();
+        String sessionKey = "sessionResult.getSessionKey()";
+        String userId = code;
+        sessionResult.setUserId(code);
 
         Role role = new Role();
         role.setName("ROLE_AUDIT");
@@ -181,6 +186,7 @@ public class ImproveController {
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Improve::getNextUserId, userId);
         wrapper.eq(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL.getCode());
+        wrapper.orderByDesc(Improve::getModifyTime);
         Page<Improve> page = new Page<>(current, size);
         Page<Improve> pageInfo = improveService.page(page, wrapper);
         return R.success(CommonPage.restPage(pageInfo));
@@ -222,15 +228,42 @@ public class ImproveController {
     }
 
     @GetMapping("/list")
-    @Operation(summary = "查询已办建议列表", security = @SecurityRequirement(name = "Authorization"),
+    @Operation(summary = "查询全部已办建议列表", security = @SecurityRequirement(name = "Authorization"),
             parameters = {@Parameter(name = "size", description = "每页数量"),
                     @Parameter(name = "current", description = "当前页码")})
     public R<CommonPage<Improve>> list(@RequestParam(value = "size", defaultValue = "10") Long size,
                                                @RequestParam(value = "current", defaultValue = "1") Long current) {
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         wrapper.ne(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL.getCode());
+        wrapper.orderByDesc(Improve::getModifyTime);
         Page<Improve> page = new Page<>(current, size);
         Page<Improve> pageInfo = improveService.page(page, wrapper);
+        return R.success(CommonPage.restPage(pageInfo));
+    }
+
+    @GetMapping("/approvalList")
+    @Operation(summary = "查询自己已办建议列表", security = @SecurityRequirement(name = "Authorization"),
+            parameters = {@Parameter(name = "size", description = "每页数量"),
+                    @Parameter(name = "current", description = "当前页码")})
+    public R<CommonPage<Improve>> approvalList(@RequestParam(value = "size", defaultValue = "10") Long size,
+                                       @RequestParam(value = "current", defaultValue = "1") Long current) {
+        String userId = SecurityUtils.getCurrentUsername().orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
+        Page<Improve> page = new Page<>(current, size);
+        page.getOrders().add(new OrderItem("modify_time", false));
+        IPage<Improve> pageInfo = improveService.approved(page, userId);
+        return R.success(CommonPage.restPage(pageInfo));
+    }
+
+    @GetMapping("/followList")
+    @Operation(summary = "查询自己跟进建议列表", security = @SecurityRequirement(name = "Authorization"),
+            parameters = {@Parameter(name = "size", description = "每页数量"),
+                    @Parameter(name = "current", description = "当前页码")})
+    public R<CommonPage<Improve>> followList(@RequestParam(value = "size", defaultValue = "10") Long size,
+                                               @RequestParam(value = "current", defaultValue = "1") Long current) {
+        String userId = SecurityUtils.getCurrentUsername().orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
+        Page<Improve> page = new Page<>(current, size);
+        page.getOrders().add(new OrderItem("modify_time", false));
+        IPage<Improve> pageInfo = improveService.follow(page, userId);
         return R.success(CommonPage.restPage(pageInfo));
     }
 

@@ -1,5 +1,6 @@
 package com.temple.manage.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.temple.manage.common.api.ResultCode;
 import com.temple.manage.common.exception.Asserts;
@@ -201,10 +202,19 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
 
     private void sendMiniNotice(List<String> toUsers, String title, String description) throws WxErrorException {
         for (String toUser : toUsers) {
-            this.sendMiniNotice(toUsers, title, description);
+            this.sendMiniNotice(toUser, title, description);
         }
     }
 
+    @Override
+    public IPage<Improve> approved(IPage<Improve> page, String userId) {
+        return this.baseMapper.approved(page, userId);
+    }
+
+    @Override
+    public IPage<Improve> follow(IPage<Improve> page, String userId) {
+        return this.baseMapper.follow(page, userId);
+    }
 }
 
 

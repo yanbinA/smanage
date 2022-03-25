@@ -1,7 +1,11 @@
 package com.temple.manage.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.temple.manage.entity.Improve;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
 * @author messi
@@ -10,7 +14,9 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @Entity com.temple.manage.entity.Improve
 */
 public interface ImproveMapper extends BaseMapper<Improve> {
+    IPage<Improve> approved(IPage<?> page, @Param("userId") String userId);
 
+    IPage<Improve> follow(IPage<?> page, @Param("userId") String userId);
 }
 
 

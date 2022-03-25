@@ -19,6 +19,7 @@ import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpUser;
+import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -140,19 +141,20 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         if (Boolean.TRUE.equals(improveDto.getAdopted())) {
             nextProcess.setOperation(ImproveProcessEnum.APPROVED);
             nextProcess.setTime(LocalDateTime.now());
-            //todo 通知跟进人
             nextProcess.setFollowUserIds(improveDto.getFollowUserIds());
+            this.sendMiniNotice(improveDto.getFollowUserIds(), "有建议需要跟进", "点击查看详情");
             if (precessIndex == process.size() - 1) {
                 improve.setStatus(ImproveStatusEnum.APPROVED);
-                //todo 通知提出者
+                this.sendMiniNotice(improve.getUserId(), "建议已通过", "点击查看详情");
             } else {
                 ImproveProcess improveProcess = process.get(precessIndex + 1);
                 improve.setNextUserName(improveProcess.getUsername());
                 improve.setNextUserName(improveProcess.getUserId());
                 //通知审批人
+                this.sendMiniNotice(improveProcess.getUserId(), "有建议需要审批", "点击查看详情");
             }
         } else {
-            //todo 通知提出者
+            this.sendMiniNotice(improve.getUserId(), "建议已拒绝", "点击查看详情");
             nextProcess.setOperation(ImproveProcessEnum.REJECTED);
             nextProcess.setTime(LocalDateTime.now());
             improve.setStatus(ImproveStatusEnum.REJECTED);
@@ -183,6 +185,24 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         }
         processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
         improve.setProcess(processList);
+    }
+
+    private void sendMiniNotice(String toUser, String title, String description) throws WxErrorException {
+        log.info("sendMiniNotice to user>>{},title>>{},description>>{}", toUser, title, description);
+        WxCpMessage wxCpMessage = WxCpMessage.newMiniProgramNoticeBuilder()
+                .toUser(toUser)
+                .title(title)
+                .appId("wx002db6ba4793bb79")
+                .description(description)
+                .contentItems(new HashMap<>())
+                .build();
+        wxCpService.getMessageService().send(wxCpMessage);
+    }
+
+    private void sendMiniNotice(List<String> toUsers, String title, String description) throws WxErrorException {
+        for (String toUser : toUsers) {
+            this.sendMiniNotice(toUsers, title, description);
+        }
     }
 
 }

@@ -180,6 +180,7 @@ public class ImproveController {
         String userId = SecurityUtils.getCurrentUsername().orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Improve::getNextUserId, userId);
+        wrapper.eq(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL.getCode());
         Page<Improve> page = new Page<>(current, size);
         Page<Improve> pageInfo = improveService.page(page, wrapper);
         return R.success(CommonPage.restPage(pageInfo));
@@ -210,8 +211,6 @@ public class ImproveController {
 
         Improve improve = new Improve();
         BeanUtils.copyProperties(improveDto, improve);
-        Optional<String> username = SecurityUtils.getCurrentUsername();
-        String userid = username.orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
         improveService.adopt(improveDto);
         return R.success(true);
     }
@@ -229,7 +228,7 @@ public class ImproveController {
     public R<CommonPage<Improve>> list(@RequestParam(value = "size", defaultValue = "10") Long size,
                                                @RequestParam(value = "current", defaultValue = "1") Long current) {
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
-        wrapper.ne(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL);
+        wrapper.ne(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL.getCode());
         Page<Improve> page = new Page<>(current, size);
         Page<Improve> pageInfo = improveService.page(page, wrapper);
         return R.success(CommonPage.restPage(pageInfo));
@@ -240,9 +239,9 @@ public class ImproveController {
     public R<String> export(@Validated @RequestBody ExportImproveDto exportSelectDto) {
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         LocalDate startTime = exportSelectDto.getStartTime();
-        LocalDate endTime = exportSelectDto.getEndTime().plusDays(1L);
+        LocalDate endTime = exportSelectDto.getEndTime();
         wrapper.between(Improve::getCreateTime, startTime, endTime)
-                .ne(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL);
+                .ne(Improve::getStatus, ImproveStatusEnum.IN_APPROVAL.getCode());
         if (exportSelectDto.getFinish() != null) {
             wrapper.eq(Improve::getFinish, exportSelectDto.getFinish());
         }

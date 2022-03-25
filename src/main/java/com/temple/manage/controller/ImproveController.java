@@ -262,59 +262,51 @@ public class ImproveController {
                     Improve item = list.get(i);
                     return getImproveItem(departmentMap, i, item);
                 }).collect(Collectors.toList());
-
-
-        List<Integer> auditRecordIds = list.stream().map(AuditRecord::getId).collect(Collectors.toList());
-        Map<Integer, String> auditRecordIdMap = list.stream().collect(Collectors.toMap(AuditRecord::getId, AuditRecord::getAuditorName));
-        LambdaQueryWrapper<PointAuditRecord> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(PointAuditRecord::getStatus, PARStatusEnum.SUBMITTED.getCode())
-                .in(PointAuditRecord::getAuditRecordId, auditRecordIds);
-        List<PointAuditRecord> pointAuditRecords = pointAuditRecordService.list(queryWrapper);
-        Map<String, List<BigDecimal>> manageScoreMap = new HashMap<>();
-        Map<String, AuditImage> auditImageMap = new HashMap<>();
-        List<ManageImage> manageImageList = new ArrayList<>();
-        pointAuditRecords.forEach(pointAuditRecord -> {
-            String auditor = pointAuditRecord.getAuditor();
-            List<BigDecimal> scoreList = manageScoreMap.getOrDefault(auditor, new ArrayList<>());
-            scoreList.add(pointAuditRecord.getTotalScore());
-            manageScoreMap.putIfAbsent(auditor, scoreList);
-            Set<String> unqualifiedUrlList = pointAuditRecord.getUnqualifiedUrlList();
-            if (CollectionUtils.isNotEmpty(unqualifiedUrlList)) {
-                unqualifiedUrlList.forEach(item -> {
-                    ManageImage manageImage = new ManageImage();
-                    manageImage.setId(1);
-                    manageImage.setDate(pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                    manageImage.setAreaName(pointAuditRecord.getAreaName());
-                    manageImage.setName(auditor);
-                    manageImage.setUrl(item);
-                    manageImageList.add(manageImage);
-                });
-            }
-            String name = auditRecordIdMap.get(pointAuditRecord.getAuditRecordId());
-            AuditImage auditImage = auditImageMap.getOrDefault(name, new AuditImage());
-            auditImage.setName(name);
-            int total = auditImage.getTotal() + Optional.ofNullable(unqualifiedUrlList).map(Set::size).orElse(0);
-            auditImage.setTotal(total);
-            auditImageMap.put(name, auditImage);
+        Map<String, List<ImproveItem>> userMap = improveItemList.stream()
+                .collect(Collectors.groupingBy(ImproveItem::getUsername));
+        List<UserImprove> userImproves = new ArrayList<>();
+        userMap.forEach((username, itemList) -> {
+            UserImprove userImprove = new UserImprove();
+            userImprove.setDepartment(itemList.get(0).department);
+            userImprove.setUsername(username);
+            userImprove.setTimes(itemList.size());
+            userImprove.setImproveType(itemList.stream().map(ImproveItem::getImproveType).collect(Collectors.joining(",")));
+            userImproves.add(userImprove);
         });
-        List<ManageScore> manageScoreList = new ArrayList<>();
-        manageScoreMap.forEach((name, scoreList) -> {
-            ManageScore manageScore = new ManageScore();
-            BigDecimal avg = BigDecimal.ZERO;
-            if (scoreList.size() != 0) {
-                BigDecimal sum = BigDecimal.ZERO;
-                for (BigDecimal item : scoreList) {
-                    sum = sum.add(item);
-                }
-                avg = sum.divide(BigDecimal.valueOf(scoreList.size()), 2, RoundingMode.UP);
+        userImproves.sort((user1, user2) -> user2.getTimes() - user1.getTimes());
+        for (int i = 0; i < userImproves.size(); i++) {
+            UserImprove userImprove = userImproves.get(i);
+            userImprove.setId(i + 1);
+            userImprove.setSort(i + 1);
+        }
+        Map<String, List<ImproveItem>> departments = improveItemList.stream().collect(Collectors.groupingBy(ImproveItem::getDepartment));
+        List<DepartmentImprove> departmentImproves = new ArrayList<>();
+        departments.forEach((department, itemList) -> {
+            DepartmentImprove departmentImprove = new DepartmentImprove();
+            departmentImprove.setId(departmentImproves.size() + 1);
+            departmentImprove.setDepartment(department);
+            departmentImprove.setTotal(itemList.size());
+            List<WxCpUser> wxCpUsers = null;
+            try {
+                wxCpUsers = wxCpService.getUserService().listByDepartment(itemList.get(0).departmentId, false, null);
+            } catch (WxErrorException e) {
+                log.error("获取企业部门数据为NULL:{}", department);
             }
-            manageScore.setScore(avg);
-            manageScore.setName(name);
-            manageScoreList.add(manageScore);
+            if (CollectionUtils.isEmpty(wxCpUsers)) {
+                departmentImprove.setCount(1);
+            }
+            departmentImprove.setCount(wxCpUsers.size());
+            departmentImprove.setAvg(BigDecimal.valueOf(departmentImprove.getTotal())
+                    .divide(BigDecimal.valueOf(departmentImprove.getCount()), 4, RoundingMode.UP));
+            departmentImprove.setApproved((int) itemList.stream().filter(ImproveItem::isApproved).count());
+            departmentImprove.setAvgApproved(BigDecimal.valueOf(departmentImprove.getApproved())
+                    .divide(BigDecimal.valueOf(departmentImprove.getCount()), 4, RoundingMode.UP));
+            departmentImprove.setApprovedRate(BigDecimal.valueOf(departmentImprove.getApproved())
+                    .divide(BigDecimal.valueOf(departmentImprove.getTotal()), 4, RoundingMode.UP)
+                    .divide(BigDecimal.valueOf(departmentImprove.getCount()), 4, RoundingMode.UP));
+            departmentImproves.add(departmentImprove);
         });
-        manageScoreList.sort((score1, score2) -> -score1.getScore().compareTo(score2.getScore()));
-        List<AuditImage> auditImageList = new ArrayList<>(auditImageMap.values());
-        auditImageList.sort((image1, image2) -> image2.getTotal() - image1.getTotal());
+
         String fileName = "improve_" + System.currentTimeMillis() + ".xls";
         fileName = FileUtil.generalDir().concat(fileName);
         // 这里 会填充到第一个sheet， 然后文件流会自动关闭
@@ -323,20 +315,9 @@ public class ImproveController {
         excelWriter = EasyExcel.write(fileName).withTemplate(this.getClass().getClassLoader().getResourceAsStream("excel/improve.xls")).build();
         FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         WriteSheet writeSheet1 = EasyExcel.writerSheet().build();
-        for (int i = 0; i < manageScoreList.size(); i++) {
-            manageScoreList.get(i).setId(i + 1);
-            manageScoreList.get(i).setSort(i + 1);
-        }
-        for (int i = 0; i < auditImageList.size(); i++) {
-            auditImageList.get(i).setId(i + 1);
-            auditImageList.get(i).setSort(i + 1);
-        }
-        for (int i = 0; i < manageImageList.size(); i++) {
-            manageImageList.get(i).setId(i + 1);
-        }
         excelWriter.fill(new FillWrapper("list", improveItemList), fillConfig, writeSheet1);
-        excelWriter.fill(new FillWrapper("user", manageImageList), fillConfig, writeSheet1);
-        excelWriter.fill(new FillWrapper("department", auditImageList), fillConfig, writeSheet1);
+        excelWriter.fill(new FillWrapper("user", userImproves), fillConfig, writeSheet1);
+        excelWriter.fill(new FillWrapper("department", departmentImproves), fillConfig, writeSheet1);
         excelWriter.finish();
         return R.success(FileUtil.getUrl(fileName));
     }
@@ -374,6 +355,8 @@ public class ImproveController {
         improveItem.setMonth(item.getCreateTime().getMonthValue() + "月");
         improveItem.setUsername(item.getUserName());
         improveItem.setTitle(item.getTitle());
+        improveItem.setDepartmentId(item.getDepartment());
+        improveItem.setApproved(item.getStatus() == ImproveStatusEnum.APPROVED);
         improveItem.setFinish(Boolean.TRUE.equals(item.getFinish()) ? "已完成" : "未完成");
         improveItem.setImproveType(Optional.ofNullable(improveTypeService.getById(item.getImproveTypeId()))
                 .map(ImproveType::getName).orElse(""));
@@ -386,12 +369,14 @@ public class ImproveController {
     static class ImproveItem{
         private Integer id;
         private String department;
+        private Long departmentId;
         private String month;
         private String username;
         private String title;
         private String finish;
         private String improveType;
         private String type;
+        private boolean approved;
     }
 
     @Data

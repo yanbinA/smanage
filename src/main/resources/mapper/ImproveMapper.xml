@@ -18,7 +18,7 @@
             <result property="improveTypeId" column="improve_type_id" jdbcType="INTEGER"/>
             <result property="departmentType" column="department_type" jdbcType="INTEGER"/>
             <result property="improveName" column="improve_name" jdbcType="VARCHAR"/>
-            <result property="process" column="process" typeHandler="com.temple.manage.common.handler.ImproveProcessTypeHandler"/>
+            <result property="process" column="process" jdbcType="INTEGER" typeHandler="com.temple.manage.common.handler.ImproveProcessTypeHandler"/>
             <result property="nextUserId" column="next_user_id" jdbcType="VARCHAR"/>
             <result property="nextUserName" column="next_user_name" jdbcType="VARCHAR"/>
             <result property="rejected" column="rejected" jdbcType="VARCHAR"/>

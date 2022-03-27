@@ -21,11 +21,10 @@ import com.temple.manage.domain.dto.ExportImproveDto;
 import com.temple.manage.domain.dto.ImproveDto;
 import com.temple.manage.domain.dto.ImproveTypeDto;
 import com.temple.manage.domain.vo.ImproveTypeVo;
-import com.temple.manage.entity.*;
-import com.temple.manage.entity.enums.AuditRecordStatusEnum;
-import com.temple.manage.entity.enums.ImproveDepartmentEnum;
+import com.temple.manage.entity.Improve;
+import com.temple.manage.entity.ImproveType;
+import com.temple.manage.entity.Role;
 import com.temple.manage.entity.enums.ImproveStatusEnum;
-import com.temple.manage.entity.enums.PARStatusEnum;
 import com.temple.manage.security.SecurityUtils;
 import com.temple.manage.security.jwt.TokenProvider;
 import com.temple.manage.service.ImproveService;
@@ -57,7 +56,6 @@ import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -90,13 +88,13 @@ public class ImproveController {
     @GetMapping("/authenticate")
     @Operation(summary = "小程序用户登录")
     public R<JWTSession> authorizeWx(@NotBlank @RequestParam() String code) throws WxErrorException {
-//        WxCpMaJsCode2SessionResult sessionResult = wxCpService.jsCode2Session(code);
-//        String sessionKey = sessionResult.getSessionKey();
-//        String userId = sessionResult.getUserId();
-        WxCpMaJsCode2SessionResult sessionResult = new WxCpMaJsCode2SessionResult();
-        String sessionKey = "sessionResult.getSessionKey()";
-        String userId = code;
-        sessionResult.setUserId(code);
+        WxCpMaJsCode2SessionResult sessionResult = wxCpService.jsCode2Session(code);
+        String sessionKey = sessionResult.getSessionKey();
+        String userId = sessionResult.getUserId();
+        //WxCpMaJsCode2SessionResult sessionResult = new WxCpMaJsCode2SessionResult();
+        //String sessionKey = "sessionResult.getSessionKey()";
+        //String userId = code;
+        //sessionResult.setUserId(code);
 
         Role role = new Role();
         role.setName("ROLE_AUDIT");

@@ -18,7 +18,7 @@ import java.util.List;
  * 
  * @TableName s_improve
  */
-@TableName(value ="s_improve")
+@TableName(value ="s_improve", autoResultMap = true)
 @Data
 @Schema(description = "建议详情")
 public class Improve implements Serializable {
@@ -116,7 +116,7 @@ public class Improve implements Serializable {
      * 审核流程
      */
     @Schema(description = "审核流程")
-    @TableField(value = "process", typeHandler = ImproveProcessTypeHandler.class)
+    @TableField(value = "process", javaType = true, typeHandler = ImproveProcessTypeHandler.class)
     private List<ImproveProcess> process;
 
     /**

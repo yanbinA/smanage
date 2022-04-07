@@ -23,6 +23,7 @@ import me.chanjar.weixin.cp.bean.WxCpUser;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -54,13 +55,10 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         Improve improve = new Improve();
         Integer improveTypeId = improveDto.getImproveTypeId();
         BeanUtils.copyProperties(improveDto, improve);
-        ImproveType improveType = this.improveTypeService.getById(improveTypeId);
-        if (improveType == null) {
-            Asserts.fail("改善类型不存在,刷新后重新选择");
-        }
-        improve.setImproveName(improveType.getName());
+
+
         improve.setImproveTypeId(improveTypeId);
-        improve.setDepartmentType(improveType.getDepartmentType());
+
         improve.setStatus(ImproveStatusEnum.IN_APPROVAL);
         //设置用户信息
         String userId = username.orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
@@ -79,7 +77,16 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         WxCpUser adoptUser = Optional.ofNullable(wxCpService.getUserService().getById(adoptUserId))
                 .orElseThrow(() -> Asserts.throwException("获取企业微信用户数据为NULL:" + adoptUserId));
         processList.add(new ImproveProcess(adoptUser.getUserId(), adoptUser.getName(), ImproveProcessEnum.IN_APPROVAL, null, null));
-        processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+        if (improveTypeId != null) {
+            ImproveType improveType = this.improveTypeService.getById(improveTypeId);
+            if (improveType == null) {
+                Asserts.fail("改善类型不存在,刷新后重新选择");
+            }
+            improve.setImproveName(improveType.getName());
+            improve.setDepartmentType(improveType.getDepartmentType());
+            processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+        }
+
         improve.setProcess(processList);
         //todo 通知审批人
         improve.setNextUserId(adoptUser.getUserId());
@@ -135,10 +142,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             log.info("数据异常,没有下一级审批");
             Asserts.fail("数据异常,没有下一级审批");
         }
-        if (nextProcess.getUserId().equals(userId)) {
-            log.info("数据异常,process中下一个审批人不正确, improve:{}", improve);
-            Asserts.fail("数据异常");
-        }
+
         if (Boolean.TRUE.equals(improveDto.getAdopted())) {
             nextProcess.setOperation(ImproveProcessEnum.APPROVED);
             nextProcess.setTime(LocalDateTime.now());
@@ -150,7 +154,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             } else {
                 ImproveProcess improveProcess = process.get(precessIndex + 1);
                 improve.setNextUserName(improveProcess.getUsername());
-                improve.setNextUserName(improveProcess.getUserId());
+                improve.setNextUserId(improveProcess.getUserId());
                 //通知审批人
                 this.sendMiniNotice(improveProcess.getUserId(), "有建议需要审批", "点击查看详情");
             }
@@ -201,6 +205,9 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
     }
 
     private void sendMiniNotice(List<String> toUsers, String title, String description) throws WxErrorException {
+        if (CollectionUtils.isEmpty(toUsers)) {
+            return;
+        }
         for (String toUser : toUsers) {
             this.sendMiniNotice(toUser, title, description);
         }

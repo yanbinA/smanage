@@ -56,7 +56,7 @@ public class ImproveDto implements Serializable {
      * 部门类型id
      */
     @Schema(description = "部门类型id")
-    @NotNull()
+    @NotNull(groups = Modify.class)
     private Integer improveTypeId;
 
     @Schema(description = "审批员userid")

@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -56,7 +57,7 @@ public class ImproveDto implements Serializable {
      * 部门类型id
      */
     @Schema(description = "部门类型id")
-    @NotNull(groups = Modify.class)
+    //@NotNull(groups = Modify.class)
     private Integer improveTypeId;
 
     @Schema(description = "审批员userid")
@@ -69,6 +70,8 @@ public class ImproveDto implements Serializable {
 
     @Schema(description = "跟进人id")
     private List<String> followUserIds;
+    @Schema(description = "预计完成日期")
+    private LocalDate followDate;
     /**
      * 驳回原因
      */

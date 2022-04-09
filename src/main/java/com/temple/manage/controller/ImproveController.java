@@ -406,6 +406,7 @@ public class ImproveController {
         private String finish;
         private String improveType;
         private String type;
+        private String money;
         private boolean approved;
     }
 

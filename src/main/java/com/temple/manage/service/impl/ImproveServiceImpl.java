@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -112,9 +113,11 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         if (!improve.getNextUserId().equals(userId)) {
             Asserts.fail("无审批权限");
         }
-        if (improve.getImproveTypeId().intValue() != improveDto.getImproveTypeId()) {
-            if (improve.getProcess().get(1).getOperation() != ImproveProcessEnum.IN_APPROVAL) {
-                Asserts.fail("改善类型已确定,无法修改");
+        if (improveDto.getImproveTypeId() != null) {
+            if (improve.getImproveTypeId().intValue() != improveDto.getImproveTypeId()) {
+                if (improve.getProcess().get(1).getOperation() != ImproveProcessEnum.IN_APPROVAL) {
+                    Asserts.fail("改善类型已确定,无法修改");
+                }
             }
             Integer improveTypeId = improveDto.getImproveTypeId();
             ImproveType improveType = this.improveTypeService.getById(improveTypeId);
@@ -127,6 +130,8 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             List<ImproveProcess> processList = improve.getProcess();
             processList.remove(processList.size() - 1);
             processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+        } else if (Boolean.TRUE.equals(improveDto.getAdopted())){
+            Asserts.fail("未选择改善类型");
         }
         improve.setFinish(improveDto.getFinish());
         List<ImproveProcess> process = improve.getProcess();
@@ -146,8 +151,14 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         if (Boolean.TRUE.equals(improveDto.getAdopted())) {
             nextProcess.setOperation(ImproveProcessEnum.APPROVED);
             nextProcess.setTime(LocalDateTime.now());
-            nextProcess.setFollowUserIds(improveDto.getFollowUserIds());
-            this.sendMiniNotice(improveDto.getFollowUserIds(), "有建议需要跟进", "点击查看详情");
+            List<String> followUserIds = improveDto.getFollowUserIds();
+            nextProcess.setFollowUserIds(followUserIds);
+            if (!CollectionUtils.isEmpty(followUserIds)) {
+                String followDate = improveDto.getFollowDate().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
+                Map<String, String> content = new HashMap<>();
+                content.put("预计完成日期", followDate);
+                this.sendMiniNotice(followUserIds, "有建议需要跟进", "点击查看详情", content);
+            }
             if (precessIndex == process.size() - 1) {
                 improve.setStatus(ImproveStatusEnum.APPROVED);
                 this.sendMiniNotice(improve.getUserId(), "建议已通过", "点击查看详情");
@@ -193,23 +204,27 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
     }
 
     private void sendMiniNotice(String toUser, String title, String description) throws WxErrorException {
+        this.sendMiniNotice(toUser, title, description, new HashMap<>());
+    }
+
+    private void sendMiniNotice(String toUser, String title, String description, Map<String, String> content) throws WxErrorException {
         log.info("sendMiniNotice to user>>{},title>>{},description>>{}", toUser, title, description);
         WxCpMessage wxCpMessage = WxCpMessage.newMiniProgramNoticeBuilder()
                 .toUser(toUser)
                 .title(title)
                 .appId("wx002db6ba4793bb79")
                 .description(description)
-                .contentItems(new HashMap<>())
+                .contentItems(content)
                 .build();
         wxCpService.getMessageService().send(wxCpMessage);
     }
 
-    private void sendMiniNotice(List<String> toUsers, String title, String description) throws WxErrorException {
+    private void sendMiniNotice(List<String> toUsers, String title, String description, Map<String, String> content) throws WxErrorException {
         if (CollectionUtils.isEmpty(toUsers)) {
             return;
         }
         for (String toUser : toUsers) {
-            this.sendMiniNotice(toUser, title, description);
+            this.sendMiniNotice(toUser, title, description, content);
         }
     }
 

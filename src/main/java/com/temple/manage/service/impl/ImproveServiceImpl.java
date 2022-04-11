@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -154,9 +155,11 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             List<String> followUserIds = improveDto.getFollowUserIds();
             nextProcess.setFollowUserIds(followUserIds);
             if (!CollectionUtils.isEmpty(followUserIds)) {
-                String followDate = improveDto.getFollowDate().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日"));
+                LocalDate followDate = improveDto.getFollowDate();
                 Map<String, String> content = new HashMap<>();
-                content.put("预计完成日期", followDate);
+                if (followDate != null) {
+                    content.put("预计完成日期", followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+                }
                 this.sendMiniNotice(followUserIds, "有建议需要跟进", "点击查看详情", content);
             }
             if (precessIndex == process.size() - 1) {

@@ -75,10 +75,10 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         improve.setDepartment(departIds[0]);
         String adoptUserId = improveDto.getAdoptUserId();
         List<ImproveProcess> processList = new ArrayList<>();
-        processList.add(new ImproveProcess(improve.getUserId(), improve.getUserName(), ImproveProcessEnum.SUBMITTED, LocalDateTime.now(), null));
+        processList.add(new ImproveProcess(improve.getUserId(), improve.getUserName(), ImproveProcessEnum.SUBMITTED, LocalDateTime.now(), null, null));
         WxCpUser adoptUser = Optional.ofNullable(wxCpService.getUserService().getById(adoptUserId))
                 .orElseThrow(() -> Asserts.throwException("获取企业微信用户数据为NULL:" + adoptUserId));
-        processList.add(new ImproveProcess(adoptUser.getUserId(), adoptUser.getName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+        processList.add(new ImproveProcess(adoptUser.getUserId(), adoptUser.getName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         if (improveTypeId != null) {
             ImproveType improveType = this.improveTypeService.getById(improveTypeId);
             if (improveType == null) {
@@ -86,7 +86,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             }
             improve.setImproveName(improveType.getName());
             improve.setDepartmentType(improveType.getDepartmentType());
-            processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+            processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         }
 
         improve.setProcess(processList);
@@ -130,7 +130,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             improve.setDepartmentType(improveType.getDepartmentType());
             List<ImproveProcess> processList = improve.getProcess();
             processList.remove(processList.size() - 1);
-            processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+            processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         } else if (Boolean.TRUE.equals(improveDto.getAdopted())){
             Asserts.fail("未选择改善类型");
         }
@@ -156,6 +156,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             nextProcess.setFollowUserIds(followUserIds);
             if (!CollectionUtils.isEmpty(followUserIds)) {
                 LocalDate followDate = improveDto.getFollowDate();
+                nextProcess.setFollowDate(followDate);
                 Map<String, String> content = new HashMap<>();
                 if (followDate != null) {
                     content.put("预计完成日期", followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
@@ -184,7 +185,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
 
     private void setProcess(Improve improve, ImproveType improveType) throws WxErrorException {
         List<ImproveProcess> processList = new ArrayList<>();
-        processList.add(new ImproveProcess(improve.getUserId(), improve.getUserName(), ImproveProcessEnum.SUBMITTED, LocalDateTime.now(), null));
+        processList.add(new ImproveProcess(improve.getUserId(), improve.getUserName(), ImproveProcessEnum.SUBMITTED, LocalDateTime.now(), null, null));
         List<WxCpDepart> list = wxCpService.getDepartmentService().list(null);
         Map<Long, WxCpDepart> departMap = list.stream().collect(Collectors.toMap(WxCpDepart::getId, wxCpDepart -> wxCpDepart));
         List<WxCpDepart> departs = new ArrayList<>();
@@ -200,9 +201,9 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         for (int i = 0; i < level; i++) {
             String departUserId = departs.get(i).getDepartmentLeader()[0];
             WxCpUser cpUser = wxCpService.getUserService().getById(departUserId);
-            processList.add(new ImproveProcess(departUserId, cpUser.getName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+            processList.add(new ImproveProcess(departUserId, cpUser.getName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         }
-        processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null));
+        processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         improve.setProcess(processList);
     }
 

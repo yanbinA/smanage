@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -37,4 +38,7 @@ public class ImproveProcess implements Serializable {
     @Schema(description = "跟进人id", hidden = true)
     @JsonIgnore
     private List<String> followUserIds;
+    @Schema(description = "跟进人id", hidden = true)
+    @JsonIgnore
+    private LocalDate followDate;
 }

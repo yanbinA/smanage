@@ -306,7 +306,11 @@ public class ImproveController {
             userImprove.setDepartment(itemList.get(0).department);
             userImprove.setUsername(username);
             userImprove.setTimes(itemList.size());
-            userImprove.setImproveType(itemList.stream().map(ImproveItem::getImproveType).collect(Collectors.joining(",")));
+            userImprove.setImproveType(itemList.stream()
+                    .map(ImproveItem::getImproveType)
+                    .filter(StringUtils::isNotEmpty)
+                    .distinct()
+                    .collect(Collectors.joining(",")));
             userImproves.add(userImprove);
         });
         userImproves.sort((user1, user2) -> user2.getTimes() - user1.getTimes());

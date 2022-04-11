@@ -24,6 +24,7 @@ import com.temple.manage.domain.vo.ImproveTypeVo;
 import com.temple.manage.entity.Improve;
 import com.temple.manage.entity.ImproveType;
 import com.temple.manage.entity.Role;
+import com.temple.manage.entity.enums.ImproveDepartmentEnum;
 import com.temple.manage.entity.enums.ImproveStatusEnum;
 import com.temple.manage.security.SecurityUtils;
 import com.temple.manage.security.jwt.TokenProvider;
@@ -37,11 +38,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import me.chanjar.weixin.common.api.WxConsts;
+import me.chanjar.weixin.common.bean.result.WxMediaUploadResult;
 import me.chanjar.weixin.common.error.WxErrorException;
 import me.chanjar.weixin.cp.api.WxCpService;
 import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpMaJsCode2SessionResult;
 import me.chanjar.weixin.cp.bean.WxCpUser;
+import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -53,6 +57,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.File;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -268,6 +273,7 @@ public class ImproveController {
     @PostMapping("/export")
     @Operation(summary = "导出数据", security = @SecurityRequirement(name = "Authorization"))
     public R<String> export(@Validated @RequestBody ExportImproveDto exportSelectDto) {
+        String userId = SecurityUtils.getCurrentUsername().orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         LocalDate startTime = exportSelectDto.getStartTime();
         LocalDate endTime = exportSelectDto.getEndTime();
@@ -324,8 +330,9 @@ public class ImproveController {
             }
             if (CollectionUtils.isEmpty(wxCpUsers)) {
                 departmentImprove.setCount(1);
+            } else {
+                departmentImprove.setCount(wxCpUsers.size());
             }
-            departmentImprove.setCount(wxCpUsers.size());
             departmentImprove.setAvg(BigDecimal.valueOf(departmentImprove.getTotal())
                     .divide(BigDecimal.valueOf(departmentImprove.getCount()), 4, RoundingMode.UP));
             departmentImprove.setApproved((int) itemList.stream().filter(ImproveItem::isApproved).count());
@@ -349,6 +356,16 @@ public class ImproveController {
         excelWriter.fill(new FillWrapper("user", userImproves), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("department", departmentImproves), fillConfig, writeSheet1);
         excelWriter.finish();
+        try {
+            WxMediaUploadResult upload = wxCpService.getMediaService().upload(WxConsts.MediaFileType.FILE, new File(fileName));
+            WxCpMessage wxCpMessage = WxCpMessage.FILE()
+                    .toUser(userId)
+                    .mediaId(upload.getMediaId())
+                    .build();
+            wxCpService.getMessageService().send(wxCpMessage);
+        } catch (WxErrorException e) {
+            log.error("upload and send error", e);
+        }
         return R.success(FileUtil.getUrl(fileName));
     }
 
@@ -390,7 +407,7 @@ public class ImproveController {
         improveItem.setFinish(Boolean.TRUE.equals(item.getFinish()) ? "已完成" : "未完成");
         improveItem.setImproveType(Optional.ofNullable(improveTypeService.getById(item.getImproveTypeId()))
                 .map(ImproveType::getName).orElse(""));
-        improveItem.setType(item.getDepartmentType().name());
+        improveItem.setType(Optional.ofNullable(item.getDepartmentType()).map(ImproveDepartmentEnum::name).orElse(""));
         return improveItem;
     }
 

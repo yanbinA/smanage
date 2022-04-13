@@ -48,6 +48,7 @@ import me.chanjar.weixin.cp.bean.WxCpUser;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -57,10 +58,14 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -272,7 +277,7 @@ public class ImproveController {
 
     @PostMapping("/export")
     @Operation(summary = "导出数据", security = @SecurityRequirement(name = "Authorization"))
-    public R<String> export(@Validated @RequestBody ExportImproveDto exportSelectDto) {
+    public R<String> export(@Validated @RequestBody ExportImproveDto exportSelectDto) throws IOException {
         String userId = SecurityUtils.getCurrentUsername().orElseThrow(() -> Asserts.throwException(ResultCode.USER_NOT_EXIST));
         LambdaQueryWrapper<Improve> wrapper = new LambdaQueryWrapper<>();
         LocalDate startTime = exportSelectDto.getStartTime();
@@ -298,6 +303,7 @@ public class ImproveController {
                     Improve item = list.get(i);
                     return getImproveItem(departmentMap, i, item);
                 }).collect(Collectors.toList());
+
         Map<String, List<ImproveItem>> userMap = improveItemList.stream()
                 .collect(Collectors.groupingBy(ImproveItem::getUsername));
         List<UserImprove> userImproves = new ArrayList<>();
@@ -352,13 +358,31 @@ public class ImproveController {
         fileName = FileUtil.generalDir().concat(fileName);
         // 这里 会填充到第一个sheet， 然后文件流会自动关闭
         ExcelWriter excelWriter = null;
+        List<ImproveItem> improveItems = improveItemList.stream()
+                .filter(item -> item.approved && item.departmentType == ImproveDepartmentEnum.QUALITY)
+                .collect(Collectors.toList());
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        HSSFWorkbook workbook = new HSSFWorkbook(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("excel/improve.xls")));
+        if (improveItems.size() > 0) {
+            workbook.setSheetName(1, "1.".concat(improveItems.get(0).getTitle()));
+            for (int i = 1; i < improveItems.size(); i++) {
+                workbook.cloneSheet(1);
+                workbook.setSheetName(i + 1, String.valueOf(i + 1).concat(".").concat(improveItems.get(i).getTitle()));
+            }
+        } else {
+            workbook.removeSheetAt(1);
+        }
+        workbook.write(bos);
+        excelWriter = EasyExcel.write(fileName).withTemplate(new ByteArrayInputStream(bos.toByteArray())).build();
 
-        excelWriter = EasyExcel.write(fileName).withTemplate(this.getClass().getClassLoader().getResourceAsStream("excel/improve.xls")).build();
         FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
-        WriteSheet writeSheet1 = EasyExcel.writerSheet().build();
+        WriteSheet writeSheet1 = EasyExcel.writerSheet(0).build();
         excelWriter.fill(new FillWrapper("list", improveItemList), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("user", userImproves), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("department", departmentImproves), fillConfig, writeSheet1);
+        for (int i = 0; i < improveItems.size(); i++) {
+            excelWriter.fill(improveItems.get(i), EasyExcel.writerSheet(i + 1).build());
+        }
         excelWriter.finish();
         try {
             WxMediaUploadResult upload = wxCpService.getMediaService().upload(WxConsts.MediaFileType.FILE, new File(fileName));
@@ -403,6 +427,10 @@ public class ImproveController {
             improveItem.setDepartment(depart.getName());
             departmentMap.put(department, depart.getName());
         }
+        improveItem.setDepartmentType(item.getDepartmentType());
+        improveItem.setRemark(item.getRemark());
+        improveItem.setActionRemark(item.getActionRemark());
+        improveItem.setCreateTime(item.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
         improveItem.setMonth(item.getCreateTime().getMonthValue() + "月");
         improveItem.setUsername(item.getUserName());
         improveItem.setTitle(item.getTitle());
@@ -411,7 +439,7 @@ public class ImproveController {
         improveItem.setFinish(Boolean.TRUE.equals(item.getFinish()) ? "已完成" : "未完成");
         improveItem.setImproveType(Optional.ofNullable(improveTypeService.getById(item.getImproveTypeId()))
                 .map(ImproveType::getName).orElse(""));
-        improveItem.setType(Optional.ofNullable(item.getDepartmentType()).map(ImproveDepartmentEnum::name).orElse(""));
+        improveItem.setType(Optional.ofNullable(item.getDepartmentType()).map(ImproveDepartmentEnum::getName).orElse(""));
         return improveItem;
     }
 
@@ -424,11 +452,15 @@ public class ImproveController {
         private String month;
         private String username;
         private String title;
+        private String remark;
+        private String actionRemark;
+        private String createTime;
         private String finish;
         private String improveType;
         private String type;
         private String money;
         private boolean approved;
+        private ImproveDepartmentEnum departmentType;
     }
 
     @Data

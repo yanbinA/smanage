@@ -21,13 +21,19 @@ public enum ImproveDepartmentEnum implements IEnum{
     @EnumValue
     @JsonValue
     private final int code;
+    private final String name;
 
     ImproveDepartmentEnum(int code, String name) {
         this.code = code;
+        this.name = name;
     }
 
     @Override
     public int getCode() {
         return this.code;
+    }
+
+    public String getName() {
+        return name;
     }
 }

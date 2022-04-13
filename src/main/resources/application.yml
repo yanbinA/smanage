@@ -84,7 +84,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 upload:
   location: /www/wwwroot/image/
-  remote: http://101.33.253.244/image/
+  remote: https://suggestion.ksb.com.cn/image/
 ---
 spring:
   config:

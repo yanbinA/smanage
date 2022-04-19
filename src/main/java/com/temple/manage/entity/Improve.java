@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.temple.manage.common.handler.ImproveProcessTypeHandler;
 import com.temple.manage.entity.enums.ImproveDepartmentEnum;
 import com.temple.manage.entity.enums.ImproveStatusEnum;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -160,6 +162,14 @@ public class Improve implements Serializable {
     @TableField(value = "modify_time")
     @Schema(description = "修改时间", hidden = true)
     private LocalDateTime modifyTime;
+
+    @TableField(value = "follow_user_ids", typeHandler = JacksonTypeHandler.class)
+    @Schema(description = "跟进人id")
+    private List<String> followUserIds;
+
+    @TableField(value = "follow_date")
+    @Schema(description = "预计完成日期")
+    private LocalDate followDate;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

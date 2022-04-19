@@ -90,9 +90,10 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         }
 
         improve.setProcess(processList);
-        //todo 通知审批人
+        //通知审批人
         improve.setNextUserId(adoptUser.getUserId());
         improve.setNextUserName(adoptUser.getName());
+        this.sendMiniNotice(adoptUser.getUserId(), "有建议需要审批", "点击查看详情");
         this.save(improve);
     }
     /**
@@ -153,17 +154,20 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             nextProcess.setOperation(ImproveProcessEnum.APPROVED);
             nextProcess.setTime(LocalDateTime.now());
             List<String> followUserIds = improveDto.getFollowUserIds();
-            nextProcess.setFollowUserIds(followUserIds);
-            if (!CollectionUtils.isEmpty(followUserIds)) {
-                LocalDate followDate = improveDto.getFollowDate();
-                nextProcess.setFollowDate(followDate);
-                Map<String, String> content = new HashMap<>();
-                if (followDate != null) {
-                    content.put("预计完成日期", followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
-                }
-                this.sendMiniNotice(followUserIds, "有建议需要跟进", "点击查看详情", content);
-            }
+            LocalDate followDate = improveDto.getFollowDate();
+            improve.setFollowDate(followDate);
+            improve.setFollowUserIds(followUserIds);
             if (precessIndex == process.size() - 1) {
+
+                nextProcess.setFollowDate(followDate);
+                nextProcess.setFollowUserIds(improveDto.getFollowUserIds());
+                if (!CollectionUtils.isEmpty(followUserIds)) {
+                    Map<String, String> content = new HashMap<>();
+                    if (followDate != null) {
+                        content.put("预计完成日期", followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+                    }
+                    this.sendMiniNotice(followUserIds, "有建议需要跟进", "点击查看详情", content);
+                }
                 improve.setStatus(ImproveStatusEnum.APPROVED);
                 this.sendMiniNotice(improve.getUserId(), "建议已通过", "点击查看详情");
             } else {

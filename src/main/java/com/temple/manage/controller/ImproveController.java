@@ -208,12 +208,12 @@ public class ImproveController {
             if (improveTypeId == null) {
                 Asserts.fail(ResultCode.VALIDATE_FAILED);
             }
-            if (StringUtils.isEmpty(improveDto.getActionRemark())) {
-                Asserts.fail(ResultCode.VALIDATE_FAILED);
-            }
-            if (StringUtils.isEmpty(improveDto.getProceedRemark())) {
-                Asserts.fail(ResultCode.VALIDATE_FAILED);
-            }
+            //if (StringUtils.isEmpty(improveDto.getActionRemark())) {
+            //    Asserts.fail(ResultCode.VALIDATE_FAILED);
+            //}
+            //if (StringUtils.isEmpty(improveDto.getProceedRemark())) {
+            //    Asserts.fail(ResultCode.VALIDATE_FAILED);
+            //}
         }
         improveService.submit(improveDto);
         return R.success(true);

@@ -42,7 +42,7 @@ public class R<T> {
      *
      */
     public static <T> R<T> success() {
-        return new R<T>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), null);
+        return new R<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), null);
     }
 
     /**
@@ -51,7 +51,7 @@ public class R<T> {
      * @param data 获取的数据
      */
     public static <T> R<T> success(T data) {
-        return new R<T>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
+        return new R<>(ResultCode.SUCCESS.getCode(), ResultCode.SUCCESS.getMessage(), data);
     }
 
     /**
@@ -61,7 +61,7 @@ public class R<T> {
      * @param  message 提示信息
      */
     public static <T> R<T> success(T data, String message) {
-        return new R<T>(ResultCode.SUCCESS.getCode(), message, data);
+        return new R<>(ResultCode.SUCCESS.getCode(), message, data);
     }
 
     /**
@@ -69,7 +69,7 @@ public class R<T> {
      * @param errorCode 错误码
      */
     public static <T> R<T> failed(IErrorCode errorCode) {
-        return new R<T>(errorCode.getCode(), errorCode.getMessage(), null);
+        return new R<>(errorCode.getCode(), errorCode.getMessage(), null);
     }
 
     /**
@@ -78,7 +78,7 @@ public class R<T> {
      * @param message 错误信息
      */
     public static <T> R<T> failed(IErrorCode errorCode, String message) {
-        return new R<T>(errorCode.getCode(), message, null);
+        return new R<>(errorCode.getCode(), message, null);
     }
 
     /**
@@ -108,20 +108,20 @@ public class R<T> {
      * @param message 提示信息
      */
     public static <T> R<T> validateFailed(String message) {
-        return new R<T>(ResultCode.VALIDATE_FAILED.getCode(), message, null);
+        return new R<>(ResultCode.VALIDATE_FAILED.getCode(), message, null);
     }
 
     /**
      * 未登录返回结果
      */
     public static <T> R<T> unauthorized(T data) {
-        return new R<T>(ResultCode.UNAUTHORIZED.getCode(), ResultCode.UNAUTHORIZED.getMessage(), data);
+        return new R<>(ResultCode.UNAUTHORIZED.getCode(), ResultCode.UNAUTHORIZED.getMessage(), data);
     }
 
     /**
      * 未授权返回结果
      */
     public static <T> R<T> forbidden(T data) {
-        return new R<T>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
+        return new R<>(ResultCode.FORBIDDEN.getCode(), ResultCode.FORBIDDEN.getMessage(), data);
     }
 }

@@ -1,5 +1,4 @@
 package com.temple.manage.service.impl;
-
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.temple.manage.common.api.ResultCode;
@@ -116,7 +115,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             Asserts.fail("无审批权限");
         }
         if (improveDto.getImproveTypeId() != null) {
-            if (improve.getImproveTypeId().intValue() != improveDto.getImproveTypeId()) {
+            if (improve.getImproveTypeId() != null && improve.getImproveTypeId().intValue() != improveDto.getImproveTypeId()) {
                 if (improve.getProcess().get(1).getOperation() != ImproveProcessEnum.IN_APPROVAL) {
                     Asserts.fail("改善类型已确定,无法修改");
                 }
@@ -135,6 +134,10 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         } else if (Boolean.TRUE.equals(improveDto.getAdopted())){
             Asserts.fail("未选择改善类型");
         }
+        improve.setTitle(improveDto.getTitle());
+        improve.setRemark(improveDto.getRemark());
+        improve.setActionRemark(improveDto.getActionRemark());
+        improve.setProceedRemark(improveDto.getProceedRemark());
         improve.setFinish(improveDto.getFinish());
         List<ImproveProcess> process = improve.getProcess();
         ImproveProcess nextProcess = null;

@@ -225,6 +225,7 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
                 .title(title)
                 .appId("wx002db6ba4793bb79")
                 .description(description)
+                .page("pages/index/index")
                 .contentItems(content)
                 .build();
         wxCpService.getMessageService().send(wxCpMessage);

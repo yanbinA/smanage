@@ -49,6 +49,7 @@ import me.chanjar.weixin.cp.bean.message.WxCpMessage;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.util.WorkbookUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.authentication.RememberMeAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -364,10 +365,10 @@ public class ImproveController {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         HSSFWorkbook workbook = new HSSFWorkbook(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("excel/improve.xls")));
         if (improveItems.size() > 0) {
-            workbook.setSheetName(1, "1.".concat(improveItems.get(0).getTitle()));
+            workbook.setSheetName(1, WorkbookUtil.createSafeSheetName("1.".concat(improveItems.get(0).getTitle())));
             for (int i = 1; i < improveItems.size(); i++) {
                 workbook.cloneSheet(1);
-                workbook.setSheetName(i + 1, String.valueOf(i + 1).concat(".").concat(improveItems.get(i).getTitle()));
+                workbook.setSheetName(i + 1, WorkbookUtil.createSafeSheetName(String.valueOf(i + 1).concat(".").concat(improveItems.get(i).getTitle())));
             }
         } else {
             workbook.removeSheetAt(1);

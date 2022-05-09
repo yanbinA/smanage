@@ -115,7 +115,8 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             Asserts.fail("无审批权限");
         }
         if (improveDto.getImproveTypeId() != null) {
-            if (improve.getImproveTypeId() != null && improve.getImproveTypeId().intValue() != improveDto.getImproveTypeId()) {
+            Integer typeId = improve.getImproveTypeId();
+            if (typeId != null && typeId.intValue() != improveDto.getImproveTypeId()) {
                 if (improve.getProcess().get(1).getOperation() != ImproveProcessEnum.IN_APPROVAL) {
                     Asserts.fail("改善类型已确定,无法修改");
                 }
@@ -129,7 +130,9 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             improve.setImproveTypeId(improveTypeId);
             improve.setDepartmentType(improveType.getDepartmentType());
             List<ImproveProcess> processList = improve.getProcess();
-            processList.remove(processList.size() - 1);
+            if (typeId != null) {
+                processList.remove(processList.size() - 1);
+            }
             processList.add(new ImproveProcess(improveType.getUserId(), improveType.getUserName(), ImproveProcessEnum.IN_APPROVAL, null, null, null));
         } else if (Boolean.TRUE.equals(improveDto.getAdopted())){
             Asserts.fail("未选择改善类型");

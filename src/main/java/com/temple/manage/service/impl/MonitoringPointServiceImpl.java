@@ -115,7 +115,7 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
             LambdaQueryWrapper<MonitoringPoint> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.eq(MonitoringPoint::getFactoryAreaId, monitoringPoint.getFactoryAreaId())
                     .eq(MonitoringPoint::getAreaName, monitoringPoint.getAreaName())
-                    .ge(MonitoringPoint::getSerialNumber, monitoringPoint.getSerialNumber());
+                    .ge(MonitoringPoint::getSerialNumber, Long.parseLong(monitoringPoint.getSerialNumber()));
             List<MonitoringPoint> list = this.list(queryWrapper);
             log.info("changeSerialNumber,list,{}", list);
             list.forEach(point -> point.setSerialNumber(String.valueOf(Long.parseLong(point.getSerialNumber()) + 1)));

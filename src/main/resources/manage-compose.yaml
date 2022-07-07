@@ -1,0 +1,26 @@
+version: "2.6"
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0.29
+    env_file:
+      - ${PWD}/env/mysql.env
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${PWD}/mysql/data:/var/lib/mysql
+      - ${PWD}/mysql/logs:/logs
+      - ${PWD}/mysql/conf:/etc/mysql/conf.d
+    restart:
+      always
+    ports:
+      - "3306:3306"
+  nginx:
+    container_name: nginx
+    image: nginx:1.23.0
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /home/manage/nginx/image:/home/smanage/image
+    - /home/manage/nginx/conf:/etc/nginx/conf.d
+    - /home/manage/nginx/logs:/var/log/nginx
+    ports:
+    - "80:80"

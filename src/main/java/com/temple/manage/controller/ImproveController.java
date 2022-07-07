@@ -6,6 +6,7 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -378,7 +379,7 @@ public class ImproveController {
 
         FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         WriteSheet writeSheet1 = EasyExcel.writerSheet(0).build();
-        excelWriter.fill(new FillWrapper("list", improveItemList), fillConfig, writeSheet1);
+        excelWriter.fill(new FillWrapper("list", improveItemList.stream().filter(ImproveItem::isApproved).collect(Collectors.toList())), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("user", userImproves), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("department", departmentImproves), fillConfig, writeSheet1);
         for (int i = 0; i < improveItems.size(); i++) {
@@ -428,6 +429,23 @@ public class ImproveController {
             improveItem.setDepartment(depart.getName());
             departmentMap.put(department, depart.getName());
         }
+        LocalDate followDate = item.getFollowDate();
+        if (followDate != null) {
+            improveItem.setFollowDate(followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+        }
+        List<String> followUserIds = item.getFollowUserIds();
+        if (CollectionUtils.isNotEmpty(followUserIds)) {
+            String followUsers = followUserIds.stream().map(id -> {
+                try {
+                    return wxCpService.getUserService().getById(id).getName();
+                } catch (WxErrorException e) {
+                    log.error("获取用户数据错误:{}", id, e);
+                }
+                return id;
+            }).collect(Collectors.joining(","));
+            improveItem.setFollowUsers(followUsers);
+        }
+
         improveItem.setDepartmentType(item.getDepartmentType());
         improveItem.setRemark(item.getRemark());
         improveItem.setActionRemark(item.getActionRemark());
@@ -461,6 +479,9 @@ public class ImproveController {
         private String type;
         private String money;
         private boolean approved;
+        private String followUsers;
+
+        private String followDate;
         private ImproveDepartmentEnum departmentType;
     }
 

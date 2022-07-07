@@ -18,9 +18,20 @@ services:
     container_name: nginx
     image: nginx:1.23.0
     volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /home/manage/nginx/image:/home/smanage/image
-    - /home/manage/nginx/conf:/etc/nginx/conf.d
-    - /home/manage/nginx/logs:/var/log/nginx
+      - /etc/localtime:/etc/localtime:ro
+      - /home/manage/nginx/image:/home/smanage/image
+      - /home/manage/nginx/conf:/etc/nginx/conf.d
+      - /home/manage/nginx/cert:/etc/nginx/cert
+      - /home/manage/nginx/html:/home/smanage/html
+      - /home/manage/nginx/logs:/var/log/nginx
     ports:
-    - "80:80"
+      - "80:80"
+      - "443:443"
+  smanage:
+    container_name: smanage
+    image: smanage:1.0.0
+    volumes:
+      - /home/manage/nginx/image:/home/smanage/image
+      - /home/manage/logs:/home/smanage/logs
+    ports:
+      - "8080:8080"

@@ -1,10 +1,10 @@
 FROM openjdk:11
 
-LABEL com.example.version="1-beta" com.example.release="smanage"
+LABEL com.example.version="1.0.0" com.example.release="smanage"
 
-WORKDIR /www/wwwroot/
+WORKDIR /home/smanage/
 
-VOLUME ["/www/wwwroot/logs","/www/wwwroot/image"]
+VOLUME ["/home/smanage/logs","/home/smanage/image"]
 
 EXPOSE 8080
 

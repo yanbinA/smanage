@@ -2,7 +2,7 @@ spring:
   application:
     name: smanage
   profiles:
-    active: home
+    active: prd
     group:
       dev: prd-db,dev-log
       home: prd-db,home-log
@@ -80,10 +80,10 @@ spring:
   datasource:
     username: smanage
     password: YCRNhRAXTwPtYK6M
-    url: jdbc:mysql://101.33.253.244:3306/smanage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
+    url: jdbc:mysql://mysql/smanage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8&allowPublicKeyRetrieval=true
     driver-class-name: com.mysql.cj.jdbc.Driver
 upload:
-  location: /www/wwwroot/image/
+  location: /home/smanage/image/
   remote: https://suggestion.ksb.com.cn/image/
 ---
 spring:
@@ -114,7 +114,7 @@ spring:
       on-profile: prd-log
 logging:
   file:
-    name: /www/wwwroot/logs/smanage
+    name: /home/smanage/logs
   level:
     com.temple.manage.security: DEBUG
     org.springframework.security: DEBUG

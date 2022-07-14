@@ -35,3 +35,5 @@ services:
       - /home/manage/logs:/home/smanage/logs
     ports:
       - "8080:8080"
+    depends_on:
+      - mysql

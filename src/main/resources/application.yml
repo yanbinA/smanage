@@ -116,5 +116,5 @@ logging:
   file:
     name: /home/smanage/logs
   level:
-    com.temple.manage.security: DEBUG
-    org.springframework.security: DEBUG
+    com.temple.manage.security: info
+    org.springframework.security: info

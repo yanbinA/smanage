@@ -1,9 +1,13 @@
 package com.temple.manage.domain.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.temple.manage.entity.enums.PARStatusEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.List;
 
@@ -69,4 +73,39 @@ public class MonitoringPointAuditVo implements Serializable {
 
     @Schema(description = "检查项列表")
     private List<MonitoringItemVo> itemList;
+    /**
+     * 位置分数
+     */
+    @Schema(description = "位置分数")
+    private Integer positionScore;
+
+    /**
+     * 位置得分备注
+     */
+    @Schema(description = "位置得分备注")
+    private String positionRemark;
+
+    /**
+     * 位置得分照片,
+     */
+    @Schema(description = "位置得分照片")
+    private String positionImage;
+
+    /**
+     * 清洁度得分
+     */
+    @Schema(description = "清洁度得分")
+    private Integer cleanScore;
+
+    /**
+     * 清洁度备注
+     */
+    @Schema(description = "清洁度备注")
+    private String cleanRemark;
+
+    /**
+     * 清洁度照片
+     */
+    @Schema(description = "清洁度照片")
+    private String cleanImage;
 }

@@ -3,6 +3,7 @@ package com.temple.manage.domain.vo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 @Data
@@ -28,6 +29,12 @@ public class MonitoringItemVo implements Serializable {
      */
     @Schema(description = "图片")
     private String itemUrl;
+
+    @Schema(description = "检测项是否合格")
+    private Boolean qualified;
+
+    @Schema(description = "检测现场图片")
+    private String image;
 
     private static final long serialVersionUID = 7144536078533314558L;
 }

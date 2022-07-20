@@ -6,7 +6,7 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
@@ -437,8 +437,8 @@ public class ImproveController {
         if (CollectionUtils.isNotEmpty(followUserIds)) {
             String followUsers = followUserIds.stream().map(id -> {
                 try {
-                    return wxCpService.getUserService().getById(id).getName();
-                } catch (WxErrorException e) {
+                    return JSON.parseObject(id, WxCpUser.class).getName();
+                } catch (Exception e) {
                     log.error("获取用户数据错误:{}", id, e);
                 }
                 return id;

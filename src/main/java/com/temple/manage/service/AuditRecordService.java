@@ -2,11 +2,10 @@ package com.temple.manage.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.temple.manage.domain.vo.AuditRecordVo;
 import com.temple.manage.entity.AuditRecord;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.temple.manage.entity.PointAuditRecord;
-import com.temple.manage.entity.enums.PARStatusEnum;
 
 import java.util.List;
 
@@ -31,7 +30,7 @@ public interface AuditRecordService extends IService<AuditRecord> {
      */
     List<PointAuditRecord> listPointAuditRecord(Integer auditRecordId);
 
-    PARStatusEnum getPointRecordStatus(Integer auditorRecordId, Integer pointId);
+    PointAuditRecord getPointRecordStatus(Integer auditorRecordId, Integer pointId);
 
     IPage<AuditRecordVo> selectPageVo(Page<AuditRecordVo> page);
 }

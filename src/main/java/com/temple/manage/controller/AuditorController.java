@@ -1,4 +1,5 @@
 package com.temple.manage.controller;
+
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.temple.manage.common.api.R;
@@ -13,6 +14,7 @@ import com.temple.manage.domain.vo.MonitoringPointAuditVo;
 import com.temple.manage.entity.FactoryArea;
 import com.temple.manage.entity.MonitoringItem;
 import com.temple.manage.entity.MonitoringPoint;
+import com.temple.manage.entity.PointAuditRecord;
 import com.temple.manage.entity.enums.PARStatusEnum;
 import com.temple.manage.security.SecurityUtils;
 import com.temple.manage.service.FactoryAreaService;
@@ -96,12 +98,23 @@ public class AuditorController {
         MonitoringPoint monitoringPoint = this.monitoringPointService.getById(pointId);
         MonitoringPointAuditVo detailVo = new MonitoringPointAuditVo();
         BeanUtils.copyProperties(monitoringPoint, detailVo);
-        PARStatusEnum pointRecordStatus = this.monitoringPointService.getPointRecordStatus(auditRecordId, pointId);
+        PointAuditRecord pointAuditRecord = this.monitoringPointService.getPointRecordStatus(auditRecordId, pointId);
+        PARStatusEnum pointRecordStatus = Optional.ofNullable(pointAuditRecord)
+                .map(PointAuditRecord::getStatus)
+                .orElse(PARStatusEnum.SUBMIT_NOT_EXIST);
         detailVo.setStatus(pointRecordStatus);
         detailVo.setAuditRecordId(auditRecordId);
         if (pointRecordStatus == PARStatusEnum.SUBMIT_NOT_EXIST) {
             List<MonitoringItem> itemList = this.monitoringPointService.listMonitoringItemByPointId(pointId);
             detailVo.setItemList(BeanUtil.copyToList(itemList, MonitoringItemVo.class));
+        } else {
+            detailVo.setItemList(BeanUtil.copyToList(pointAuditRecord.getItemList(), MonitoringItemVo.class));
+            detailVo.setCleanImage(pointAuditRecord.getCleanImage());
+            detailVo.setCleanRemark(pointAuditRecord.getCleanRemark());
+            detailVo.setCleanScore(pointAuditRecord.getCleanScore());
+            detailVo.setPositionImage(pointAuditRecord.getPositionImage());
+            detailVo.setPositionScore(pointAuditRecord.getPositionScore());
+            detailVo.setPositionRemark(pointAuditRecord.getPositionRemark());
         }
         return R.success(detailVo);
     }

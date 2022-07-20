@@ -5,7 +5,7 @@ spring:
     active: prd
     group:
       dev: prd-db,dev-log
-      home: prd-db,home-log
+      home: home-db,home-log
       prd: prd-db,prd-log
   devtools:
     restart:

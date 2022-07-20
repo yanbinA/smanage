@@ -7,7 +7,7 @@ import com.temple.manage.domain.dto.MonitoringPointDto;
 import com.temple.manage.domain.vo.MonitoringPointAuditVo;
 import com.temple.manage.entity.MonitoringItem;
 import com.temple.manage.entity.MonitoringPoint;
-import com.temple.manage.entity.enums.PARStatusEnum;
+import com.temple.manage.entity.PointAuditRecord;
 
 import java.util.List;
 
@@ -38,7 +38,7 @@ public interface MonitoringPointService extends IService<MonitoringPoint> {
      * @param pointId   pointId
      * @return  PARStatusEnum
      */
-    PARStatusEnum getPointRecordStatus(Integer auditorRecordId, Integer pointId);
+    PointAuditRecord getPointRecordStatus(Integer auditorRecordId, Integer pointId);
 
     /**
      * @description 提交检查项结果

@@ -1,4 +1,5 @@
 package com.temple.manage.service.impl;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.temple.manage.common.api.ResultCode;
@@ -162,7 +163,17 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
             List<String> followUserIds = improveDto.getFollowUserIds();
             LocalDate followDate = improveDto.getFollowDate();
             improve.setFollowDate(followDate);
-            improve.setFollowUserIds(followUserIds);
+            if (!CollectionUtils.isEmpty(followUserIds)) {
+                List<String> followUsers = followUserIds.stream().map(id -> {
+                    try {
+                        return JSON.toJSONString(wxCpService.getUserService().getById(id));
+                    } catch (WxErrorException e) {
+                        log.error("获取用户数据错误:{}", id, e);
+                    }
+                    return id;
+                }).collect(Collectors.toList());
+                improve.setFollowUserIds(followUsers);
+            }
             if (precessIndex == process.size() - 1) {
 
                 nextProcess.setFollowDate(followDate);

@@ -13,6 +13,7 @@ import com.temple.manage.common.api.CommonPage;
 import com.temple.manage.common.api.R;
 import com.temple.manage.common.exception.Asserts;
 import com.temple.manage.common.utils.FileUtil;
+import com.temple.manage.domain.ItemResult;
 import com.temple.manage.domain.dto.AuditResultDto;
 import com.temple.manage.domain.dto.AuditScoreDto;
 import com.temple.manage.domain.dto.ExportAuditRecordDto;
@@ -167,22 +168,23 @@ public class AuditRecordController {
             List<BigDecimal> scoreList = manageScoreMap.getOrDefault(auditor, new ArrayList<>());
             scoreList.add(pointAuditRecord.getTotalScore());
             manageScoreMap.putIfAbsent(auditor, scoreList);
-            Set<String> unqualifiedUrlList = pointAuditRecord.getUnqualifiedUrlList();
+            //Set<String> unqualifiedUrlList = pointAuditRecord.getUnqualifiedUrlList();
+            List<ItemResult> unqualifiedUrlList = pointAuditRecord.getItemList().stream().filter(item -> !item.getQualified()).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(unqualifiedUrlList)) {
                 unqualifiedUrlList.forEach(item -> {
                     ManageImage manageImage = new ManageImage();
                     manageImage.setId(1);
                     manageImage.setDate(pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                    manageImage.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()));
+                    manageImage.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()).concat("-").concat(item.getItemNumber()));
                     manageImage.setName(auditor);
-                    manageImage.setUrl(item);
+                    manageImage.setUrl(item.getItemUrl());
                     manageImageList.add(manageImage);
                 });
             }
             String name = auditRecordIdMap.get(pointAuditRecord.getAuditRecordId());
             AuditImage auditImage = auditImageMap.getOrDefault(name, new AuditImage());
             auditImage.setName(name);
-            int total = auditImage.getTotal() + Optional.ofNullable(unqualifiedUrlList).map(Set::size).orElse(0);
+            int total = auditImage.getTotal() + Optional.of(unqualifiedUrlList).map(List::size).orElse(0);
             auditImage.setTotal(total);
             auditImageMap.put(name, auditImage);
         });

@@ -1,12 +1,4 @@
 package com.temple.manage.service.impl;
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,14 +9,19 @@ import com.temple.manage.entity.AuditRecord;
 import com.temple.manage.entity.FactoryArea;
 import com.temple.manage.entity.PointAuditRecord;
 import com.temple.manage.entity.enums.AuditRecordStatusEnum;
-import com.temple.manage.entity.enums.PARStatusEnum;
-import com.temple.manage.service.AuditRecordService;
 import com.temple.manage.mapper.AuditRecordMapper;
+import com.temple.manage.service.AuditRecordService;
 import com.temple.manage.service.FactoryAreaService;
 import com.temple.manage.service.PointAuditRecordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
 * @author messi
@@ -90,15 +87,13 @@ public class AuditRecordServiceImpl extends ServiceImpl<AuditRecordMapper, Audit
     }
 
     @Override
-    public PARStatusEnum getPointRecordStatus(Integer auditRecordId, Integer pointId) {
+    public PointAuditRecord getPointRecordStatus(Integer auditRecordId, Integer pointId) {
         LambdaQueryWrapper<PointAuditRecord> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(PointAuditRecord::getAuditRecordId, auditRecordId)
                 .eq(PointAuditRecord::getPointId, pointId)
                 .eq(PointAuditRecord::getIsDeleted, false)
                 .last("limit 1");
-        return Optional.ofNullable(this.pointAuditRecordService.getOne(wrapper))
-                .map(PointAuditRecord::getStatus)
-                .orElse(PARStatusEnum.SUBMIT_NOT_EXIST);
+        return this.pointAuditRecordService.getOne(wrapper);
     }
 
     @Override

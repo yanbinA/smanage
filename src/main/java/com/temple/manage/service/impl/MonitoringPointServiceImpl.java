@@ -169,7 +169,7 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
     }
 
     @Override
-    public PARStatusEnum getPointRecordStatus(Integer auditRecordId, Integer pointId) {
+    public PointAuditRecord getPointRecordStatus(Integer auditRecordId, Integer pointId) {
         return auditRecordService.getPointRecordStatus(auditRecordId, pointId);
     }
 
@@ -189,11 +189,12 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
         PointAuditRecord pointAuditRecord = this.pointAuditRecordService.getOne(wrapper, false);
         if (pointAuditRecord == null) {
             pointAuditRecord = new PointAuditRecord();
-        } else {
-            if (pointAuditRecord.getStatus() == PARStatusEnum.SUBMIT_SCORE || pointAuditRecord.getStatus() == PARStatusEnum.SUBMITTED) {
-                return;
-            }
         }
+        //else {
+            //if (pointAuditRecord.getStatus() == PARStatusEnum.SUBMIT_SCORE || pointAuditRecord.getStatus() == PARStatusEnum.SUBMITTED) {
+            //    return;
+            //}
+        //}
         setUnqualified(resultDto, pointAuditRecord);
         pointAuditRecord.setAuditRecordId(resultDto.getAuditRecordId());
         LambdaQueryWrapper<PointAuditRecord> queryWrapper = new LambdaQueryWrapper<>();

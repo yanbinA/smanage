@@ -173,7 +173,7 @@ public class AuditRecordController {
                     ManageImage manageImage = new ManageImage();
                     manageImage.setId(1);
                     manageImage.setDate(pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
-                    manageImage.setAreaName(pointAuditRecord.getAreaName());
+                    manageImage.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()));
                     manageImage.setName(auditor);
                     manageImage.setUrl(item);
                     manageImageList.add(manageImage);

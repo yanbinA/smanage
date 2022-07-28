@@ -55,14 +55,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
          // allow anonymous resource requests
          .antMatchers(
+                 "/actuator/**",
                  "/swagger-ui/**",
-            "/",
-            "/v3/**",
-            "/*.html",
-            "/favicon.ico",
-            "/**/*.html",
-            "/**/*.css",
-            "/**/*.js"
+                 "/",
+                 "/v3/**",
+                 "/*.html",
+                 "/favicon.ico",
+                 "/**/*.html",
+                 "/**/*.css",
+                 "/**/*.js"
          );
    }
 

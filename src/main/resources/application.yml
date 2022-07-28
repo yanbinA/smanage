@@ -4,7 +4,7 @@ spring:
   profiles:
     active: prd
     group:
-      dev: prd-db,dev-log
+      dev: dev-db,dev-log
       home: prd-db,home-log
       prd: prd-db,prd-log
   devtools:
@@ -46,6 +46,15 @@ wx:
   corpId: wwbc036019ad9d1e5d
   agentId: 1000020
   appId: wx002db6ba4793bb79
+management:
+  endpoints:
+    web:
+      exposure:
+        #开放所有endpoints
+        include: "*"
+  endpoint:
+    shutdown:
+      enabled: true
 ---
 spring:
   config:
@@ -65,9 +74,9 @@ spring:
     activate:
       on-profile: dev-db
   datasource:
-    username: im_agent
-    password: sdj12345678
-    url: jdbc:mysql://10.254.0.10:5505/im_agent?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
+    username: smanage
+    password: YCRNhRAXTwPtYK6M
+    url: jdbc:mysql://101.33.253.244:3306/smanage?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimeZone=UTC+8
     driver-class-name: com.mysql.cj.jdbc.Driver
 upload:
   location: D:/image/

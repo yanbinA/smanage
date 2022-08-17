@@ -1,0 +1,15 @@
+version: "2.6"
+services:
+  nexus:
+    container_name: nexus
+    image: sonatype/nexus3
+    environment:
+      - "INSTALL4J_ADD_VM_PARAMS=-Xms512m -Xmx512m -XX:MaxDirectMemorySize=1024m"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/nexus/nexus-data:/nexus-data
+    restart:
+      always
+    ports:
+      - "18080:8081"
+      - "18081-18090:18081-18090"

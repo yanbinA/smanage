@@ -33,5 +33,6 @@
            modify_time as modifyTime
         from s_audit_record
         where status=${@com.temple.manage.entity.enums.AuditRecordStatusEnum@SUBMIT.getCode()}
+        order by complete_date desc, auditor_name
     </select>
 </mapper>

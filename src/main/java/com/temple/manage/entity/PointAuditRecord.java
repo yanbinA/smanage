@@ -158,7 +158,7 @@ public class PointAuditRecord implements Serializable {
     /**
      * 
      */
-    @TableField(value = "create_time", fill = FieldFill.INSERT)
+    @TableField(value = "create_time")
     private LocalDateTime createTime;
 
     /**

@@ -1,9 +1,6 @@
 package com.temple.manage.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import com.temple.manage.common.handler.ImproveProcessTypeHandler;
 import com.temple.manage.entity.enums.ImproveDepartmentEnum;
@@ -159,7 +156,7 @@ public class Improve implements Serializable {
     /**
      * 
      */
-    @TableField(value = "modify_time")
+    @TableField(value = "modify_time", updateStrategy = FieldStrategy.NEVER)
     @Schema(description = "修改时间", hidden = true)
     private LocalDateTime modifyTime;
 

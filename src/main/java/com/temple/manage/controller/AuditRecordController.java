@@ -177,7 +177,7 @@ public class AuditRecordController {
                     manageImage.setDate(pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
                     manageImage.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()).concat("-").concat(item.getItemNumber()));
                     manageImage.setName(auditor);
-                    manageImage.setUrl(item.getItemUrl());
+                    manageImage.setUrl(item.getImage());
                     manageImageList.add(manageImage);
                 });
             }

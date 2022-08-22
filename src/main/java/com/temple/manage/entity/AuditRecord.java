@@ -1,16 +1,13 @@
 package com.temple.manage.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.temple.manage.entity.enums.AuditRecordStatusEnum;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import com.temple.manage.entity.enums.AuditRecordStatusEnum;
-import lombok.Data;
 
 /**
  * 审核记录
@@ -81,7 +78,7 @@ public class AuditRecord implements Serializable {
     /**
      * 
      */
-    @TableField(value = "modify_time")
+    @TableField(value = "modify_time", updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime modifyTime;
 
     @TableField(exist = false)

@@ -57,7 +57,7 @@ public class FactoryAuditDto {
          */
         @Schema(description = "位置分数")
         @NotNull
-        @Min(value = 2)
+        @Min(value = 0)
         @Max(value = 10)
         private Integer positionScore;
 
@@ -78,7 +78,7 @@ public class FactoryAuditDto {
          */
         @Schema(description = "清洁度得分")
         @NotNull
-        @Min(value = 2)
+        @Min(value = 0)
         @Max(value = 10)
         private Integer cleanScore;
 

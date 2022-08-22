@@ -164,7 +164,7 @@ public class PointAuditRecord implements Serializable {
     /**
      * 
      */
-    @TableField(value = "modify_time")
+    @TableField(value = "modify_time", updateStrategy = FieldStrategy.NEVER)
     private LocalDateTime modifyTime;
 
     @TableField(exist = false)

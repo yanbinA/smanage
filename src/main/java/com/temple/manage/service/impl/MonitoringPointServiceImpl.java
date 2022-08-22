@@ -238,7 +238,7 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
         BigDecimal imageScore = BigDecimal.valueOf(pointAuditRecord.getUnqualifiedItemList().size())
                 .divide(BigDecimal.valueOf(pointAuditRecord.getItemCount()), 2, RoundingMode.DOWN)
                 .multiply(BigDecimal.valueOf(70));
-        pointAuditRecord.setImageScore(imageScore);
+        pointAuditRecord.setImageScore(BigDecimal.valueOf(70).subtract(imageScore));
         this.pointAuditRecordService.updateById(pointAuditRecord);
         log.info("update pointAuditRecord--->{}", pointAuditRecord);
         //修改引用这次记录计算keepScore的记录

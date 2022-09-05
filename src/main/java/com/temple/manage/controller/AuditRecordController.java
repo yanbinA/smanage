@@ -163,6 +163,7 @@ public class AuditRecordController {
         Map<String, List<BigDecimal>> manageScoreMap = new HashMap<>();
         Map<String, AuditImage> auditImageMap = new HashMap<>();
         List<ManageImage> manageImageList = new ArrayList<>();
+        List<ScoreDetail> scoreDetailList = new ArrayList<>();
         pointAuditRecords.forEach(pointAuditRecord -> {
             String auditor = pointAuditRecord.getAuditor();
             List<BigDecimal> scoreList = manageScoreMap.getOrDefault(auditor, new ArrayList<>());
@@ -170,11 +171,12 @@ public class AuditRecordController {
             manageScoreMap.putIfAbsent(auditor, scoreList);
             //Set<String> unqualifiedUrlList = pointAuditRecord.getUnqualifiedUrlList();
             List<ItemResult> unqualifiedUrlList = pointAuditRecord.getItemList().stream().filter(item -> !item.getQualified()).collect(Collectors.toList());
+            String date = pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE);
             if (CollectionUtils.isNotEmpty(unqualifiedUrlList)) {
                 unqualifiedUrlList.forEach(item -> {
                     ManageImage manageImage = new ManageImage();
                     manageImage.setId(1);
-                    manageImage.setDate(pointAuditRecord.getModifyTime().format(DateTimeFormatter.ISO_LOCAL_DATE));
+                    manageImage.setDate(date);
                     manageImage.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()).concat("-").concat(item.getItemNumber()));
                     manageImage.setName(auditor);
                     manageImage.setUrl(item.getImage());
@@ -187,6 +189,20 @@ public class AuditRecordController {
             int total = auditImage.getTotal() + Optional.of(unqualifiedUrlList).map(List::size).orElse(0);
             auditImage.setTotal(total);
             auditImageMap.put(name, auditImage);
+            ScoreDetail scoreDetail = new ScoreDetail();
+            scoreDetail.setDate(date);
+            scoreDetail.setName(name);
+            scoreDetail.setAreaName(pointAuditRecord.getAreaName().concat("-").concat(pointAuditRecord.getSerialNumber()));
+            scoreDetail.setAudit(auditor);
+            scoreDetail.setPositionScore(pointAuditRecord.getPositionScore());
+            scoreDetail.setPositionImage(pointAuditRecord.getPositionImage());
+            scoreDetail.setPositionRemark(pointAuditRecord.getPositionRemark());
+            scoreDetail.setCleanScore(pointAuditRecord.getCleanScore());
+            scoreDetail.setCleanImage(pointAuditRecord.getCleanImage());
+            scoreDetail.setCleanRemark(pointAuditRecord.getCleanRemark());
+
+            scoreDetailList.add(scoreDetail);
+
         });
         List<ManageScore> manageScoreList = new ArrayList<>();
         manageScoreMap.forEach((name, scoreList) -> {
@@ -214,6 +230,7 @@ public class AuditRecordController {
         excelWriter = EasyExcel.write(fileName).withTemplate(this.getClass().getClassLoader().getResourceAsStream("excel/s5.xls")).build();
         FillConfig fillConfig = FillConfig.builder().forceNewRow(Boolean.TRUE).build();
         WriteSheet writeSheet1 = EasyExcel.writerSheet().build();
+        WriteSheet writeSheet2 = EasyExcel.writerSheet(1).build();
         for (int i = 0; i < manageScoreList.size(); i++) {
             manageScoreList.get(i).setId(i + 1);
             manageScoreList.get(i).setSort(i + 1);
@@ -228,6 +245,7 @@ public class AuditRecordController {
         excelWriter.fill(new FillWrapper("score", manageScoreList), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("image", manageImageList), fillConfig, writeSheet1);
         excelWriter.fill(new FillWrapper("audit", auditImageList), fillConfig, writeSheet1);
+        excelWriter.fill(new FillWrapper("item", scoreDetailList), fillConfig, writeSheet2);
         Map<String, String> map = new HashMap<>();
         map.put("dateSpan", startTime.format(DateTimeFormatter.ISO_LOCAL_DATE).concat("到").concat(endTime.format(DateTimeFormatter.ISO_LOCAL_DATE)));
         excelWriter.fill(map, writeSheet1);
@@ -258,6 +276,20 @@ public class AuditRecordController {
         private Integer sort;
         private int total;
         private String name;
+    }
+
+    @Data
+    static class ScoreDetail {
+        private String date;
+        private String name;
+        private String areaName;
+        private String audit;
+        private Integer positionScore;
+        private String positionImage;
+        private String positionRemark;
+        private Integer cleanScore;
+        private String cleanImage;
+        private String cleanRemark;
     }
 
 }

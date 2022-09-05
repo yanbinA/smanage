@@ -3,6 +3,10 @@ package com.temple.manage.controller;
 import cn.hutool.core.bean.BeanUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.ExcelWriter;
+import com.alibaba.excel.enums.CellDataTypeEnum;
+import com.alibaba.excel.metadata.data.ImageData;
+import com.alibaba.excel.metadata.data.WriteCellData;
+import com.alibaba.excel.util.FileUtils;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
@@ -459,6 +463,26 @@ public class ImproveController {
         improveItem.setImproveType(Optional.ofNullable(improveTypeService.getById(item.getImproveTypeId()))
                 .map(ImproveType::getName).orElse(""));
         improveItem.setType(Optional.ofNullable(item.getDepartmentType()).map(ImproveDepartmentEnum::getName).orElse(""));
+        try {
+            WriteCellData<Void> writeCellData = new WriteCellData<>();
+            improveItem.setImage(writeCellData);
+            // 这里可以设置为 EMPTY 则代表不需要其他数据了
+            writeCellData.setType(CellDataTypeEnum.EMPTY);
+
+            // 可以放入多个图片
+            List<ImageData> imageDataList = new ArrayList<>();
+            ImageData imageData = new ImageData();
+            imageDataList.add(imageData);
+            writeCellData.setImageDataList(imageDataList);
+            // 放入2进制图片
+            imageData.setImage(FileUtils.readFileToByteArray(new File("D:\\image\\224717.png")));
+            // 图片类型
+            imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
+            imageData.setRelativeLastRowIndex(18);
+            imageData.setRelativeLastColumnIndex(1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return improveItem;
     }
 
@@ -480,6 +504,7 @@ public class ImproveController {
         private String money;
         private boolean approved;
         private String followUsers;
+        private WriteCellData<Void> image;
 
         private String followDate;
         private ImproveDepartmentEnum departmentType;

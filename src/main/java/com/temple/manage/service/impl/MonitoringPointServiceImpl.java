@@ -74,6 +74,7 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public synchronized boolean modify(MonitoringPointDto monitoringPointDto) {
         if (this.getById(monitoringPointDto.getId()) == null) {
             Asserts.fail(ResultCode.NO_DATA);
@@ -102,6 +103,20 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
         this.monitoringItemService.removeByIds(itemIds);
         monitoringPoint.setItemCount(monitoringPointDto.getItemList().size());
         return this.updateById(monitoringPoint);
+    }
+
+    @Override
+    public boolean deleteById(Integer id) {
+        MonitoringPoint monitoringPoint = this.getById(id);
+        LambdaQueryWrapper<MonitoringPoint> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(MonitoringPoint::getFactoryAreaId, monitoringPoint.getFactoryAreaId())
+                .eq(MonitoringPoint::getAreaName, monitoringPoint.getAreaName())
+                .ge(MonitoringPoint::getSerialNumber, Long.parseLong(monitoringPoint.getSerialNumber()));
+        List<MonitoringPoint> list = this.list(queryWrapper);
+        log.info("delete changeSerialNumber,list,{}", list);
+        list.forEach(point -> point.setSerialNumber(String.valueOf(Long.parseLong(point.getSerialNumber()) - 1)));
+        this.updateBatchById(list);
+        return this.removeById(id);
     }
 
     private void changeSerialNumber(MonitoringPoint monitoringPoint) {

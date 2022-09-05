@@ -80,4 +80,6 @@ public interface MonitoringPointService extends IService<MonitoringPoint> {
      * @param username 审核员名称
      */
     void submit(Integer factoryAreaId, String username);
+
+    boolean deleteById(Integer id);
 }

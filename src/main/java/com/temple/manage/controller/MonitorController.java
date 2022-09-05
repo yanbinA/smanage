@@ -82,7 +82,7 @@ public class MonitorController {
     @PostMapping("remove")
     @Operation(summary = "删除检查点", security = @SecurityRequirement(name = "Authorization"))
     public R<Boolean> remove(@NotNull @RequestParam("id") Integer id) {
-        return R.success(this.monitoringPointService.removeById(id));
+        return R.success(this.monitoringPointService.deleteById(id));
     }
 
 }

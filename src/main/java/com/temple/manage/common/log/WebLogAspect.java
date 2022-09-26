@@ -66,7 +66,6 @@ public class WebLogAspect {
         HttpServletRequest request = attributes.getRequest();
         //记录请求信息
         WebLog webLog = new WebLog();
-        Object result = joinPoint.proceed();
         Signature signature = joinPoint.getSignature();
         MethodSignature methodSignature = (MethodSignature) signature;
         Method method = methodSignature.getMethod();
@@ -74,19 +73,25 @@ public class WebLogAspect {
             Operation log = method.getAnnotation(Operation.class);
             webLog.setDescription(log.summary());
         }
-        long endTime = System.currentTimeMillis();
         String urlStr = request.getRequestURL().toString();
-        webLog.setBasePath(StrUtil.removeSuffix(urlStr, URLUtil.url(urlStr).getPath()));
-        webLog.setUsername(request.getRemoteUser());
-        webLog.setIp(IpUtil.getRemoteIp());
-        webLog.setMethod(request.getMethod());
-        webLog.setParameter(getParameter(method, joinPoint.getArgs()));
-        webLog.setResult(result);
-        webLog.setSpendTime((int) (endTime - startTime));
-        webLog.setStartTime(startTime);
-        webLog.setUri(request.getRequestURI());
-        webLog.setUrl(request.getRequestURL().toString());
-        log.info(JSONUtil.parse(webLog).toString());
+        Object result = null;
+        try {
+            result = joinPoint.proceed();
+        } finally {
+            long endTime = System.currentTimeMillis();
+            webLog.setBasePath(StrUtil.removeSuffix(urlStr, URLUtil.url(urlStr).getPath()));
+            webLog.setUsername(request.getRemoteUser());
+            webLog.setIp(IpUtil.getRemoteIp());
+            webLog.setMethod(request.getMethod());
+            webLog.setParameter(getParameter(method, joinPoint.getArgs()));
+            webLog.setResult(result);
+            webLog.setSpendTime((int) (endTime - startTime));
+            webLog.setStartTime(startTime);
+            webLog.setUri(request.getRequestURI());
+            webLog.setUrl(request.getRequestURL().toString());
+            log.info(JSONUtil.parse(webLog).toString());
+        }
+
         return result;
     }
 

@@ -455,8 +455,8 @@ public class ImproveController {
         improveItem.setRemark(item.getRemark());
         improveItem.setActionRemark(item.getActionRemark());
         improveItem.setCreateTime(item.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-        improveItem.setModifyTime(item.getModifyTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
-        improveItem.setNextUserName(item.getNextUserName());
+        improveItem.setModifyTime(item.getProcess().get(1).getTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+        improveItem.setNextUserName(item.getProcess().get(1).getUsername());
         improveItem.setMonth(item.getCreateTime().getMonthValue() + "月");
         improveItem.setUsername(item.getUserName());
         improveItem.setTitle(item.getTitle());

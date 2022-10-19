@@ -365,7 +365,7 @@ public class ImproveController {
         // 这里 会填充到第一个sheet， 然后文件流会自动关闭
         ExcelWriter excelWriter = null;
         List<ImproveItem> improveItems = improveItemList.stream()
-                .filter(item -> item.approved && item.departmentType == ImproveDepartmentEnum.QUALITY)
+                .filter(item -> item.approved)
                 .collect(Collectors.toList());
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         HSSFWorkbook workbook = new HSSFWorkbook(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("excel/improve.xls")));

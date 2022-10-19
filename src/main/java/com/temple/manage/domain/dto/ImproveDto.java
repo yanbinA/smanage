@@ -31,14 +31,20 @@ public class ImproveDto implements Serializable {
      */
     @NotBlank
     @Length(min = 1, max = 255)
-    @Schema(description = "主题")
+    @Schema(description = "描述")
     private String remark;
+
+    @Schema(description = "描述图片")
+    private String remarkImage;
 
     /**
      * 措施描述
      */
     @Schema(description = "措施描述")
     private String actionRemark;
+
+    @Schema(description = "措施描述")
+    private String actionRemarkImage;
 
     /**
      * 收益描述

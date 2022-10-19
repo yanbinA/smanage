@@ -30,7 +30,7 @@ import javax.validation.ConstraintViolationException;
 public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = ApiException.class)
-    public R handle(ApiException e) {
+    public R<Void> handle(ApiException e) {
         if (e.getErrorCode() != null) {
             return R.failed(e.getErrorCode(), e.getMessage());
         }
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
-    public R handleValidException(MethodArgumentNotValidException e) {
+    public R<Void> handleValidException(MethodArgumentNotValidException e) {
         BindingResult bindingResult = e.getBindingResult();
         String message = null;
         if (bindingResult.hasErrors()) {

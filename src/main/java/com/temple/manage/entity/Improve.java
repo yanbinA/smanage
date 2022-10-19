@@ -69,12 +69,20 @@ public class Improve implements Serializable {
     @Schema(description = "描述")
     private String remark;
 
+    @TableField(value = "remark_image")
+    @Schema(description = "描述图片")
+    private String remarkImage;
+
     /**
      * 措施描述
      */
     @TableField(value = "action_remark")
     @Schema(description = "措施描述")
     private String actionRemark;
+
+    @TableField(value = "action_remark_image")
+    @Schema(description = "措施描述图片")
+    private String actionRemarkImage;
 
     /**
      * 收益描述

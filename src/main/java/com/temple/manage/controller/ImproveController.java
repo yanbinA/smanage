@@ -70,6 +70,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -435,7 +436,7 @@ public class ImproveController {
         }
         LocalDate followDate = item.getFollowDate();
         if (followDate != null) {
-            improveItem.setFollowDate(followDate.format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+            improveItem.setFollowDate(followDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
         }
         List<String> followUserIds = item.getFollowUserIds();
         if (CollectionUtils.isNotEmpty(followUserIds)) {
@@ -453,7 +454,9 @@ public class ImproveController {
         improveItem.setDepartmentType(item.getDepartmentType());
         improveItem.setRemark(item.getRemark());
         improveItem.setActionRemark(item.getActionRemark());
-        improveItem.setCreateTime(item.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy年MM月dd日")));
+        improveItem.setCreateTime(item.getCreateTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+        improveItem.setModifyTime(item.getProcess().get(1).getTime().format(DateTimeFormatter.ofPattern("yyyy/MM/dd")));
+        improveItem.setNextUserName(item.getProcess().get(1).getUsername());
         improveItem.setMonth(item.getCreateTime().getMonthValue() + "月");
         improveItem.setUsername(item.getUserName());
         improveItem.setTitle(item.getTitle());
@@ -464,22 +467,43 @@ public class ImproveController {
                 .map(ImproveType::getName).orElse(""));
         improveItem.setType(Optional.ofNullable(item.getDepartmentType()).map(ImproveDepartmentEnum::getName).orElse(""));
         try {
-            WriteCellData<Void> writeCellData = new WriteCellData<>();
-            improveItem.setImage(writeCellData);
-            // 这里可以设置为 EMPTY 则代表不需要其他数据了
-            writeCellData.setType(CellDataTypeEnum.EMPTY);
+            String remarkImage = item.getRemarkImage();
+            if (StringUtils.isNotEmpty(remarkImage)) {
+                WriteCellData<Void> writeCellData = new WriteCellData<>();
+                improveItem.setRemarkImage(writeCellData);
+                // 这里可以设置为 EMPTY 则代表不需要其他数据了
+                writeCellData.setType(CellDataTypeEnum.EMPTY);
+                // 可以放入多个图片
+                List<ImageData> imageDataList = new ArrayList<>();
+                ImageData imageData = new ImageData();
+                imageDataList.add(imageData);
+                writeCellData.setImageDataList(imageDataList);
+                // 放入2进制图片
+                imageData.setImage(new URL(remarkImage).openStream().readAllBytes());
+                // 图片类型
+                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
+                imageData.setRelativeLastRowIndex(18);
+                imageData.setRelativeLastColumnIndex(1);
+            }
+            String actionRemarkImage = item.getActionRemarkImage();
+            if (StringUtils.isNotEmpty(actionRemarkImage)) {
+                WriteCellData<Void> writeCellData = new WriteCellData<>();
+                improveItem.setActionRemarkImage(writeCellData);
+                // 这里可以设置为 EMPTY 则代表不需要其他数据了
+                writeCellData.setType(CellDataTypeEnum.EMPTY);
+                // 可以放入多个图片
+                List<ImageData> imageDataList = new ArrayList<>();
+                ImageData imageData = new ImageData();
+                imageDataList.add(imageData);
+                writeCellData.setImageDataList(imageDataList);
+                // 放入2进制图片
+                imageData.setImage(new URL(actionRemarkImage).openStream().readAllBytes());
+                // 图片类型
+                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
+                imageData.setRelativeLastRowIndex(18);
+                imageData.setRelativeLastColumnIndex(1);
+            }
 
-            // 可以放入多个图片
-            List<ImageData> imageDataList = new ArrayList<>();
-            ImageData imageData = new ImageData();
-            imageDataList.add(imageData);
-            writeCellData.setImageDataList(imageDataList);
-            // 放入2进制图片
-            imageData.setImage(FileUtils.readFileToByteArray(new File("D:\\image\\224717.png")));
-            // 图片类型
-            imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
-            imageData.setRelativeLastRowIndex(18);
-            imageData.setRelativeLastColumnIndex(1);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -504,7 +528,10 @@ public class ImproveController {
         private String money;
         private boolean approved;
         private String followUsers;
-        private WriteCellData<Void> image;
+        private String nextUserName;
+        private String modifyTime;
+        private WriteCellData<Void> remarkImage;
+        private WriteCellData<Void> actionRemarkImage;
 
         private String followDate;
         private ImproveDepartmentEnum departmentType;

@@ -140,7 +140,9 @@ public class ImproveServiceImpl extends ServiceImpl<ImproveMapper, Improve>
         }
         improve.setTitle(improveDto.getTitle());
         improve.setRemark(improveDto.getRemark());
+        improve.setRemarkImage(improveDto.getRemarkImage());
         improve.setActionRemark(improveDto.getActionRemark());
+        improve.setActionRemarkImage(improveDto.getActionRemarkImage());
         improve.setProceedRemark(improveDto.getProceedRemark());
         improve.setFinish(improveDto.getFinish());
         List<ImproveProcess> process = improve.getProcess();

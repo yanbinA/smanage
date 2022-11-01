@@ -12,7 +12,9 @@
         <result property="status" column="status" jdbcType="INTEGER"/>
         <result property="title" column="title" jdbcType="VARCHAR"/>
         <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="remarkImage" column="remark_image" jdbcType="VARCHAR"/>
         <result property="actionRemark" column="action_remark" jdbcType="VARCHAR"/>
+        <result property="actionRemarkImage" column="action_remark_image" jdbcType="VARCHAR"/>
         <result property="proceedRemark" column="proceed_remark" jdbcType="VARCHAR"/>
         <result property="finish" column="finish" jdbcType="BOOLEAN"/>
         <result property="improveTypeId" column="improve_type_id" jdbcType="INTEGER"/>
@@ -34,7 +36,7 @@
     <sql id="Base_Column_List">
         id,user_id,user_name,
         department,status,title,
-        remark,action_remark,proceed_remark,
+        remark,action_remark,proceed_remark,remark_image,action_remark_image,
         finish,improve_type_id,department_type,
         improve_name,process,next_user_id,
         next_user_name,rejected,version,follow_date,follow_user_ids,

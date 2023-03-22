@@ -2,8 +2,8 @@ package com.temple.manage.util;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.temple.manage.service.MonitoringPointService;
 import lombok.Data;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -11,6 +11,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 public final class LogInUtils {
@@ -21,6 +22,7 @@ public final class LogInUtils {
    }
 
    public static String getTokenForLogin(String username, MockMvc mockMvc) throws Exception {
+      MonitoringPointService mock = mock(MonitoringPointService.class);
       String content = mockMvc.perform(post("/api/authenticate")
          .contentType(MediaType.APPLICATION_JSON)
          .content("{\"username\": \"" + username + "\"}"))

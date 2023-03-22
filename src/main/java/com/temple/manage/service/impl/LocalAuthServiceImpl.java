@@ -21,9 +21,10 @@ public class LocalAuthServiceImpl extends ServiceImpl<LocalAuthMapper, LocalAuth
     private final PasswordEncoder passwordEncoder;
     private final RoleService roleService;
 
-    public LocalAuthServiceImpl(PasswordEncoder passwordEncoder, RoleService roleService) {
+    public LocalAuthServiceImpl(PasswordEncoder passwordEncoder, RoleService roleService, LocalAuthMapper localAuthMapper) {
         this.passwordEncoder = passwordEncoder;
         this.roleService = roleService;
+        this.baseMapper = localAuthMapper;
     }
 
     @Override
@@ -71,4 +72,6 @@ public class LocalAuthServiceImpl extends ServiceImpl<LocalAuthMapper, LocalAuth
         localAuth.setRoles(roleService.listByUserId(localAuth.getId()));
         return localAuth;
     }
+
+
 }

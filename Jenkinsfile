@@ -1,0 +1,38 @@
+pipeline {
+    agent any
+
+    // 存放所有任务的合集
+    stages {
+        stage('拉取Git代码') {
+            steps {
+                echo '拉取Git代码'
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/yanbinA/smanage.git']])
+            }
+        }
+
+        stage('检测代码质量') {
+            steps {
+                echo '检测代码质量'
+            }
+        }
+
+        stage('构建代码') {
+            steps {
+                echo '构建代码'
+                sh '/var/jenkins_home/maven/bin/mvn clean package -DskipTests'
+            }
+        }
+
+        stage('制作自定义镜像并发布Harbor') {
+            steps {
+                echo '制作自定义镜像并发布Harbor'
+            }
+        }
+
+        stage('基于Harbor部署工程') {
+            steps {
+                echo '基于Harbor部署工程'
+            }
+        }
+    }
+}

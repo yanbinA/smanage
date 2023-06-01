@@ -6,7 +6,6 @@ import com.alibaba.excel.ExcelWriter;
 import com.alibaba.excel.enums.CellDataTypeEnum;
 import com.alibaba.excel.metadata.data.ImageData;
 import com.alibaba.excel.metadata.data.WriteCellData;
-import com.alibaba.excel.util.FileUtils;
 import com.alibaba.excel.write.metadata.WriteSheet;
 import com.alibaba.excel.write.metadata.fill.FillConfig;
 import com.alibaba.excel.write.metadata.fill.FillWrapper;
@@ -411,6 +410,7 @@ public class ImproveController {
         if (departmentMap.containsKey(department)) {
             improveItem.setDepartment(departmentMap.get(department));
         } else {
+            String name = "";
             List<WxCpDepart> wxCpDeparts = null;
             try {
                 wxCpDeparts = Optional.ofNullable(wxCpService.getDepartmentService().list(department))
@@ -419,20 +419,24 @@ public class ImproveController {
                 log.error("获取企业部门数据为NULL:{}", department);
             }
             if (wxCpDeparts == null) {
-                Asserts.fail("获取企业部门数据为NULL");
-            }
-            WxCpDepart depart = null;
-            for (WxCpDepart wxCpDepart : wxCpDeparts) {
-                if (wxCpDepart.getId() == department) {
-                    depart = wxCpDepart;
-                    break;
+//                Asserts.fail("获取企业部门数据为NULL");
+                log.error("获取企业部门数据为NULL:{}--wxCpDeparts", department);
+            } else {
+                WxCpDepart depart = null;
+                for (WxCpDepart wxCpDepart : wxCpDeparts) {
+                    if (wxCpDepart.getId() == department) {
+                        depart = wxCpDepart;
+                        break;
+                    }
+                }
+                if (depart == null) {
+                    log.error("获取企业部门数据为NULL:{}--WxCpDepart", wxCpDeparts);
+//                    Asserts.fail("获取企业部门数据为NULL");
                 }
             }
-            if (depart == null) {
-                Asserts.fail("获取企业部门数据为NULL");
-            }
-            improveItem.setDepartment(depart.getName());
-            departmentMap.put(department, depart.getName());
+
+            improveItem.setDepartment(name);
+            departmentMap.put(department, name);
         }
         LocalDate followDate = item.getFollowDate();
         if (followDate != null) {

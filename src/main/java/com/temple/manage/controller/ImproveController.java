@@ -50,6 +50,7 @@ import me.chanjar.weixin.cp.bean.WxCpDepart;
 import me.chanjar.weixin.cp.bean.WxCpMaJsCode2SessionResult;
 import me.chanjar.weixin.cp.bean.WxCpUser;
 import me.chanjar.weixin.cp.bean.message.WxCpMessage;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -483,9 +484,9 @@ public class ImproveController {
                 imageDataList.add(imageData);
                 writeCellData.setImageDataList(imageDataList);
                 // 放入2进制图片
-                imageData.setImage(new URL(remarkImage).openStream().readAllBytes());
+                imageData.setImage(thumbnail(remarkImage));
                 // 图片类型
-                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
+                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_JPEG);
                 imageData.setRelativeLastRowIndex(18);
                 imageData.setRelativeLastColumnIndex(1);
             }
@@ -501,17 +502,27 @@ public class ImproveController {
                 imageDataList.add(imageData);
                 writeCellData.setImageDataList(imageDataList);
                 // 放入2进制图片
-                imageData.setImage(new URL(actionRemarkImage).openStream().readAllBytes());
+                imageData.setImage(thumbnail(actionRemarkImage));
                 // 图片类型
-                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_PNG);
+                imageData.setImageType(ImageData.ImageType.PICTURE_TYPE_JPEG);
                 imageData.setRelativeLastRowIndex(18);
                 imageData.setRelativeLastColumnIndex(1);
             }
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("处理图片异常", e);
         }
         return improveItem;
+    }
+
+    public byte[] thumbnail(String url) throws IOException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        Thumbnails.of(new URL(url))
+                .scale(0.6)
+                .outputFormat("JPEG")
+                .outputQuality(0.2)
+                .toOutputStream(stream);
+        return stream.toByteArray();
     }
 
     //内容清单

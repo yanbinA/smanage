@@ -420,19 +420,22 @@ public class ImproveController {
             }
             if (wxCpDeparts == null) {
 //                Asserts.fail("获取企业部门数据为NULL");
-                log.error("获取企业部门数据为NULL:{}--wxCpDeparts", department);
+                log.info("获取企业部门数据为NULL:{}--wxCpDeparts", department);
                 try {
                     WxCpUser wxCpUser = wxCpService.getUserService().getById(item.getUserId());
                     Improve update = new Improve();
                     update.setId(item.getId());
                     department = wxCpUser.getDepartIds()[0];
+
                     update.setDepartment(department);
                     improveService.updateById(update);
+                    log.info("获取企业部门数据为NULL, 更新企业部门ID:{}", update);
                     if (departmentMap.containsKey(department)) {
                         improveItem.setDepartment(departmentMap.get(department));
                         name = departmentMap.get(department);
+                        log.info("获取企业部门数据为NULL,从MAP中获取name:{}", name);
                     } else {
-                        log.info("获取企业部门数据为NULL, 更新企业ID:{}", update);
+                        log.info("获取企业部门数据为NULL, 查询企业ID:{}", department);
                         wxCpDeparts = wxCpService.getDepartmentService().list(department);
                     }
 
@@ -445,11 +448,13 @@ public class ImproveController {
                 for (WxCpDepart wxCpDepart : wxCpDeparts) {
                     if (wxCpDepart.getId() == department) {
                         depart = wxCpDepart;
+                        name = depart.getName();
+                        log.info("获取企业部门数据ID:{}, name:{}", department, name);
                         break;
                     }
                 }
                 if (depart == null) {
-                    log.error("获取企业部门数据为NULL:{}--WxCpDepart", wxCpDeparts);
+                    log.error("获取企业部门数据为NULL:最终检查{}--WxCpDepart", department);
 //                    Asserts.fail("获取企业部门数据为NULL");
                 }
             }

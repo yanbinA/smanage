@@ -414,8 +414,7 @@ public class ImproveController {
             String name = "";
             List<WxCpDepart> wxCpDeparts = null;
             try {
-                wxCpDeparts = Optional.ofNullable(wxCpService.getDepartmentService().list(department))
-                        .orElseThrow(() -> Asserts.throwException("获取企业部门数据为NULL:" + department));
+                wxCpDeparts = wxCpService.getDepartmentService().list(department);
             } catch (WxErrorException e) {
                 log.error("获取企业部门数据为NULL:{}", department);
             }
@@ -426,13 +425,22 @@ public class ImproveController {
                     WxCpUser wxCpUser = wxCpService.getUserService().getById(item.getUserId());
                     Improve update = new Improve();
                     update.setId(item.getId());
-                    update.setDepartment(wxCpUser.getDepartIds()[0]);
+                    department = wxCpUser.getDepartIds()[0];
+                    update.setDepartment(department);
                     improveService.updateById(update);
-                    log.info("获取企业部门数据为NULL, 更新企业ID:{}", update);
+                    if (departmentMap.containsKey(department)) {
+                        improveItem.setDepartment(departmentMap.get(department));
+                        name = departmentMap.get(department);
+                    } else {
+                        log.info("获取企业部门数据为NULL, 更新企业ID:{}", update);
+                        wxCpDeparts = wxCpService.getDepartmentService().list(department);
+                    }
+
                 } catch (Exception e) {
                     log.error("更新企业ID异常", e);
                 }
-            } else {
+            }
+            if (wxCpDeparts != null){
                 WxCpDepart depart = null;
                 for (WxCpDepart wxCpDepart : wxCpDeparts) {
                     if (wxCpDepart.getId() == department) {

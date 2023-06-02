@@ -422,6 +422,16 @@ public class ImproveController {
             if (wxCpDeparts == null) {
 //                Asserts.fail("获取企业部门数据为NULL");
                 log.error("获取企业部门数据为NULL:{}--wxCpDeparts", department);
+                try {
+                    WxCpUser wxCpUser = wxCpService.getUserService().getById(item.getUserId());
+                    Improve update = new Improve();
+                    update.setId(item.getId());
+                    update.setDepartment(wxCpUser.getDepartIds()[0]);
+                    improveService.updateById(update);
+                    log.info("获取企业部门数据为NULL, 更新企业ID:{}", update);
+                } catch (Exception e) {
+                    log.error("更新企业ID异常", e);
+                }
             } else {
                 WxCpDepart depart = null;
                 for (WxCpDepart wxCpDepart : wxCpDeparts) {

@@ -66,6 +66,8 @@
     <logger name="io.swagger" level="INFO"/>
     <logger name="org.springframework" level="INFO"/>
     <logger name="org.hibernate.validator" level="INFO"/>
+    <logger name="org.apache" level="ERROR"/>
+
 
     <root level="DEBUG">
         <appender-ref ref="CONSOLE"/>

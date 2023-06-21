@@ -194,6 +194,17 @@ public class MonitoringPointServiceImpl extends ServiceImpl<MonitoringPointMappe
         MonitoringPoint monitoringPoint = this.getById(resultDto.getPointId());
         if (monitoringPoint.getItemCount() != resultDto.getItemList().size()) {
             log.info("monitoringPoint.itemCount != resultDto.getItemList()");
+            LambdaQueryWrapper<PointAuditRecord> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(PointAuditRecord::getPointId, resultDto.getPointId())
+                    .eq(PointAuditRecord::getAuditRecordId, resultDto.getAuditRecordId())
+                    .eq(PointAuditRecord::getIsDeleted, 0L);
+            PointAuditRecord pointAuditRecord = this.pointAuditRecordService.getOne(wrapper, false);
+            if (pointAuditRecord != null) {
+                log.info("update PointAuditRecord status to SUBMIT_NOT_EXIST, current record:{}", pointAuditRecord);
+                pointAuditRecord.setStatus(PARStatusEnum.SUBMIT_NOT_EXIST);
+                this.pointAuditRecordService.updateById(pointAuditRecord);
+            }
+
             Asserts.fail(ResultCode.SUBMIT_INCOMPLETE);
         }
         //保存数据
